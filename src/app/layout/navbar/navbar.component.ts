@@ -17,7 +17,7 @@ import { AuthService } from '../../core/services/auth.service';
             <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-700 flex items-center justify-center shadow-sm">
               <i class="pi pi-heart text-white text-sm"></i>
             </div>
-            <span class="font-bold text-slate-800 text-base tracking-tight">Tena</span>
+            <span class="font-bold text-slate-800 text-base tracking-tight">TenaDigital</span>
           </a>
 
           <!-- Desktop nav -->

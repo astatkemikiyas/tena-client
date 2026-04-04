@@ -21,7 +21,7 @@ import { AuthService } from '../../../core/services/auth.service';
             <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500 to-indigo-700 flex items-center justify-center shadow-lg">
               <i class="pi pi-heart text-white text-2xl"></i>
             </div>
-            <span class="font-bold text-slate-800 text-xl tracking-tight">Tena</span>
+            <span class="font-bold text-slate-800 text-xl tracking-tight">TenaDigital</span>
           </a>
           <h1 class="text-2xl font-bold text-slate-800 mt-2">Welcome back</h1>
           <p class="text-slate-500 text-sm mt-1">Sign in to your account to continue</p>

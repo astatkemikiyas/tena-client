@@ -5,5 +5,5 @@ export const environment = {
   keycloakRealm: 'master',
   // Must match a Keycloak client with "Direct access grants" enabled
   keycloakClientId: 'tena-client',
-  appName: 'Tena',
+  appName: 'TenaDigital',
 };
