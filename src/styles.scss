@@ -26,3 +26,7 @@ body {
 .p-button { @apply font-medium; }
 .p-card { @apply shadow-sm border border-slate-100; }
 .p-tag { @apply font-medium text-xs; }
+
+/* Hide scrollbar but keep scroll functionality */
+.no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
