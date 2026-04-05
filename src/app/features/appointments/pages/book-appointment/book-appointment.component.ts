@@ -203,8 +203,12 @@ export class BookAppointmentComponent implements OnInit {
           detail: 'Your appointment is pending doctor approval.' });
         setTimeout(() => this.router.navigate(['/appointments']), 1800);
       },
-      error: () => {
-        this.errorMsg.set('Booking failed. Please try again.');
+      error: (err: { status?: number }) => {
+        if (err.status === 409) {
+          this.errorMsg.set('This slot has already been booked by someone else. Please go back and choose a different slot.');
+        } else {
+          this.errorMsg.set('Booking failed. Please try again.');
+        }
         this.saving.set(false);
       },
       complete: () => this.saving.set(false),
