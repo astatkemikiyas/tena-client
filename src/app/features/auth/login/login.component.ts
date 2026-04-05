@@ -32,9 +32,9 @@ import { AuthService } from '../../../core/services/auth.service';
           <form class="space-y-5" (ngSubmit)="submit()">
 
             <div class="flex flex-col gap-1.5">
-              <label class="text-sm font-medium text-slate-700">Username</label>
+              <label class="text-sm font-medium text-slate-700">Email or Username</label>
               <input pInputText [(ngModel)]="username" name="username"
-                     placeholder="Enter your username" class="w-full"
+                     placeholder="Enter your email or username" class="w-full"
                      [disabled]="loading()" />
             </div>
 
@@ -88,19 +88,19 @@ export class LoginComponent {
 
   submit() {
     if (!this.username || !this.password) {
-      this.error.set('Please enter your username and password.');
+      this.error.set('Please enter your email or username and password.');
       return;
     }
     this.loading.set(true);
     this.error.set('');
-    this.auth.login(this.username, this.password).subscribe({
+    this.auth.loginWithEmailOrUsername(this.username.trim(), this.password).subscribe({
       next: () => {
         const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') ?? '/';
         this.router.navigateByUrl(returnUrl);
       },
       error: (err) => {
         const msg = err?.error?.error_description ?? err?.error?.message;
-        this.error.set(msg || 'Invalid username or password. Please try again.');
+        this.error.set(msg || 'Invalid email/username or password. Please try again.');
         this.loading.set(false);
       },
       complete: () => this.loading.set(false),

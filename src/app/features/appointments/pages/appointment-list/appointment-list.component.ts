@@ -1,174 +1,355 @@
-import { Component, inject, signal, OnInit, computed } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnInit,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { ButtonModule } from 'primeng/button';
-import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { ToastModule } from 'primeng/toast';
-import { ProgressSpinnerModule } from 'primeng/progressspinner';
-import { MessageService, ConfirmationService } from 'primeng/api';
-import { AppointmentService } from '../../services/appointment.service';
 import { AppointmentDTO, AppointmentStatus } from '../../../../shared/models';
+import { AppointmentService } from '../../services/appointment.service';
 
-const STATUS_CONFIG: Record<AppointmentStatus, { label: string; cls: string }> = {
-  SCHEDULED:   { label: 'Scheduled',    cls: 'bg-blue-50 text-blue-700 ring-blue-200'     },
-  ATTENDED:    { label: 'Attended',     cls: 'bg-emerald-50 text-emerald-700 ring-emerald-200' },
-  COMPLETED:   { label: 'Completed',    cls: 'bg-green-50 text-green-700 ring-green-200'   },
-  CANCELLED:   { label: 'Cancelled',    cls: 'bg-slate-100 text-slate-500 ring-slate-200'  },
-  LATE_CANCEL: { label: 'Late Cancel',  cls: 'bg-amber-50 text-amber-700 ring-amber-200'   },
-  NO_SHOW:     { label: 'No Show',      cls: 'bg-rose-50 text-rose-700 ring-rose-200'      },
+type TabId = 'all' | 'upcoming' | 'past';
+
+interface StatusMeta {
+  label: string;
+  bar:   string;
+  badge: string;
+  dot:   string;
+}
+
+const STATUSES: Record<string, StatusMeta> = {
+  PENDING:     { label: 'Pending Approval', bar: 'bg-amber-400',   badge: 'bg-amber-100 text-amber-800',     dot: 'bg-amber-400'   },
+  SCHEDULED:   { label: 'Scheduled',        bar: 'bg-blue-500',    badge: 'bg-blue-100 text-blue-800',       dot: 'bg-blue-500'    },
+  ATTENDED:    { label: 'Attended',          bar: 'bg-emerald-500', badge: 'bg-emerald-100 text-emerald-800', dot: 'bg-emerald-500' },
+  COMPLETED:   { label: 'Completed',         bar: 'bg-green-500',   badge: 'bg-green-100 text-green-800',     dot: 'bg-green-500'   },
+  CANCELLED:   { label: 'Cancelled',         bar: 'bg-slate-300',   badge: 'bg-slate-100 text-slate-500',     dot: 'bg-slate-400'   },
+  LATE_CANCEL: { label: 'Late Cancel',       bar: 'bg-orange-400',  badge: 'bg-orange-100 text-orange-800',   dot: 'bg-orange-400'  },
+  NO_SHOW:     { label: 'No Show',           bar: 'bg-rose-500',    badge: 'bg-rose-100 text-rose-800',       dot: 'bg-rose-500'    },
 };
+
+const UPCOMING_SET = new Set(['PENDING', 'SCHEDULED']);
 
 @Component({
   selector: 'app-appointment-list',
   standalone: true,
-  imports: [CommonModule, RouterLink, ButtonModule, ConfirmDialogModule, ToastModule, ProgressSpinnerModule],
-  providers: [MessageService, ConfirmationService],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [RouterLink],
   template: `
-    <p-toast />
-    <p-confirmDialog />
-    <div class="space-y-6">
+    <div class="max-w-4xl mx-auto space-y-6">
+
+      <!-- Header -->
       <div class="flex items-center justify-between">
         <div>
-          <h2 class="text-lg font-semibold text-slate-800">My Appointments</h2>
-          <p class="text-sm text-slate-500">{{ all().length }} total</p>
+          <h1 class="text-xl font-bold text-slate-800">My Appointments</h1>
+          <p class="text-sm text-slate-500 mt-0.5">Track and manage your healthcare visits</p>
         </div>
         <a routerLink="/slots"
-           class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-indigo-600 text-white text-sm font-medium hover:bg-indigo-700 transition-colors">
-          <i class="pi pi-plus text-xs"></i> Book New
+           class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-teal-600 text-white text-sm font-semibold hover:bg-teal-700 active:bg-teal-800 transition-colors shadow-sm">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"/>
+          </svg>
+          Book New
         </a>
       </div>
 
-      @if (loading()) {
-        <div class="flex justify-center py-20">
-          <p-progressSpinner strokeWidth="3" [style]="{width:'48px',height:'48px'}" />
-        </div>
-      } @else if (all().length === 0) {
-        <div class="flex flex-col items-center py-20 gap-3">
-          <div class="w-16 h-16 rounded-full bg-indigo-50 flex items-center justify-center">
-            <i class="pi pi-calendar text-3xl text-indigo-400"></i>
-          </div>
-          <p class="text-sm font-medium text-slate-700">No appointments yet</p>
-          <p class="text-xs text-slate-400 mb-2">Book your first appointment with a specialist</p>
-          <a routerLink="/slots"
-             class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-indigo-600 text-white text-sm font-medium hover:bg-indigo-700 transition-colors">
-            Browse Available Slots
-          </a>
-        </div>
-      } @else {
-
-        @if (upcoming().length > 0) {
-          <div>
-            <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Upcoming</p>
-            <div class="space-y-3">
-              @for (appt of upcoming(); track appt.id) {
-                <ng-container *ngTemplateOutlet="card; context: { appt: appt, canCancel: true }" />
-              }
-            </div>
-          </div>
+      <!-- Tab bar -->
+      <div class="flex gap-1 bg-slate-100 p-1 rounded-xl">
+        @for (tab of tabs; track tab.id) {
+          <button
+            (click)="setTab(tab.id)"
+            [class]="activeTab() === tab.id
+              ? 'flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-lg bg-white shadow-sm text-slate-800 font-semibold text-sm transition-all'
+              : 'flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-slate-500 font-medium text-sm hover:text-slate-700 transition-all'">
+            {{ tab.label }}
+            <span [class]="activeTab() === tab.id
+              ? 'inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-xs font-bold bg-teal-100 text-teal-700'
+              : 'inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-xs font-semibold bg-slate-200 text-slate-500'">
+              {{ tab.count() }}
+            </span>
+          </button>
         }
-
-        @if (past().length > 0) {
-          <div>
-            <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Past</p>
-            <div class="space-y-3">
-              @for (appt of past(); track appt.id) {
-                <ng-container *ngTemplateOutlet="card; context: { appt: appt, canCancel: false }" />
-              }
-            </div>
-          </div>
-        }
-
-      }
-    </div>
-
-    <ng-template #card let-appt="appt" let-canCancel="canCancel">
-      <div class="bg-white rounded-xl border border-slate-200 p-4 flex gap-4 hover:shadow-sm transition-shadow">
-        <!-- Date box -->
-        <div class="w-14 h-14 rounded-xl flex flex-col items-center justify-center flex-shrink-0"
-             [class]="appt.status === 'SCHEDULED' ? 'bg-indigo-50' : 'bg-slate-50'">
-          <span class="text-base font-bold leading-none"
-                [class]="appt.status === 'SCHEDULED' ? 'text-indigo-700' : 'text-slate-500'">
-            {{ appt.startTime ? (appt.startTime | date:'d') : (appt.createdAt | date:'d') }}
-          </span>
-          <span class="text-xs uppercase leading-none mt-0.5"
-                [class]="appt.status === 'SCHEDULED' ? 'text-indigo-400' : 'text-slate-400'">
-            {{ appt.startTime ? (appt.startTime | date:'MMM') : (appt.createdAt | date:'MMM') }}
-          </span>
-        </div>
-
-        <!-- Info -->
-        <div class="flex-1 min-w-0">
-          <div class="flex items-start justify-between gap-2">
-            <div class="min-w-0">
-              <p class="text-sm font-semibold text-slate-800 truncate">
-                {{ appt.doctorName || 'Doctor #' + appt.slotId }}
-              </p>
-              <p class="text-xs text-slate-500 mt-0.5">
-                @if (appt.specialization) {
-                  {{ appt.specialization }}
-                }
-                @if (appt.startTime) {
-                  · {{ appt.startTime | date:'HH:mm' }}
-                }
-              </p>
-              @if (appt.hospitalName) {
-                <p class="text-xs text-slate-400 mt-1 flex items-center gap-1">
-                  <i class="pi pi-building text-xs"></i>{{ appt.hospitalName }}
-                </p>
-              }
-            </div>
-            <div class="flex items-center gap-2 flex-shrink-0">
-              <span [class]="'inline-flex px-2 py-0.5 rounded-full text-xs font-medium ring-1 ring-inset ' + statusCls(appt.status)">
-                {{ statusLabel(appt.status) }}
-              </span>
-              @if (canCancel) {
-                <button (click)="cancel(appt)"
-                        class="w-7 h-7 rounded-lg flex items-center justify-center text-slate-400 hover:bg-rose-50 hover:text-rose-500 transition-colors">
-                  <i class="pi pi-times text-xs"></i>
-                </button>
-              }
-            </div>
-          </div>
-        </div>
       </div>
-    </ng-template>
+
+      <!-- Status chip filters -->
+      @if (!loading() && tabStatuses().length > 1) {
+        <div class="flex items-center gap-2 flex-wrap">
+          <span class="text-xs font-medium text-slate-400">Filter:</span>
+          <button
+            (click)="activeStatus.set('')"
+            [class]="activeStatus() === ''
+              ? 'px-3 py-1 rounded-full text-xs font-semibold bg-slate-800 text-white transition-colors'
+              : 'px-3 py-1 rounded-full text-xs font-semibold bg-white text-slate-600 border border-slate-200 hover:border-slate-400 transition-colors'">
+            All
+          </button>
+          @for (st of tabStatuses(); track st) {
+            <button
+              (click)="activeStatus.set(activeStatus() === st ? '' : st)"
+              [class]="activeStatus() === st
+                ? 'px-3 py-1 rounded-full text-xs font-semibold ring-2 ring-offset-1 ring-slate-400 transition-colors ' + meta(st).badge
+                : 'px-3 py-1 rounded-full text-xs font-semibold bg-white text-slate-600 border border-slate-200 hover:border-slate-400 transition-colors'">
+              <span class="inline-flex items-center gap-1.5">
+                <span [class]="'w-1.5 h-1.5 rounded-full flex-shrink-0 ' + meta(st).dot"></span>
+                {{ meta(st).label }}
+              </span>
+            </button>
+          }
+        </div>
+      }
+
+      <!-- Loading skeleton -->
+      @if (loading()) {
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          @for (n of [1,2,3,4]; track n) {
+            <div class="rounded-xl border border-slate-200 bg-white overflow-hidden animate-pulse">
+              <div class="h-1 bg-slate-200"></div>
+              <div class="p-5 space-y-4">
+                <div class="flex items-start justify-between">
+                  <div class="space-y-1.5">
+                    <div class="h-4 bg-slate-200 rounded w-36"></div>
+                    <div class="h-3 bg-slate-200 rounded w-24"></div>
+                  </div>
+                  <div class="h-6 bg-slate-200 rounded-full w-24"></div>
+                </div>
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-full bg-slate-200 flex-shrink-0"></div>
+                  <div class="flex-1 space-y-1.5">
+                    <div class="h-4 bg-slate-200 rounded w-40"></div>
+                    <div class="h-3 bg-slate-200 rounded w-28"></div>
+                  </div>
+                </div>
+                <div class="h-3 bg-slate-200 rounded w-48"></div>
+                <div class="pt-3 border-t border-slate-100 flex justify-between">
+                  <div class="h-3 bg-slate-200 rounded w-24"></div>
+                  <div class="h-6 bg-slate-200 rounded w-16"></div>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+
+      <!-- Empty state -->
+      } @else if (displayed().length === 0) {
+        <div class="flex flex-col items-center py-16 gap-4 text-center">
+          <div class="w-20 h-20 rounded-2xl bg-slate-100 flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-9 h-9 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+            </svg>
+          </div>
+          @if (all().length === 0) {
+            <div>
+              <p class="font-semibold text-slate-700">No appointments yet</p>
+              <p class="text-sm text-slate-400 mt-1">Book your first appointment with a specialist</p>
+            </div>
+            <a routerLink="/slots"
+               class="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-teal-600 text-white text-sm font-semibold hover:bg-teal-700 transition-colors">
+              Browse Available Slots
+            </a>
+          } @else {
+            <div>
+              <p class="font-semibold text-slate-700">No appointments match this filter</p>
+              <p class="text-sm text-slate-400 mt-1">Try a different tab or clear the filter</p>
+            </div>
+            <button (click)="setTab('all')"
+                    class="inline-flex items-center px-4 py-2 rounded-lg border border-slate-200 text-sm text-slate-600 hover:bg-slate-50 transition-colors">
+              View all appointments
+            </button>
+          }
+        </div>
+
+      <!-- Appointment cards -->
+      } @else {
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          @for (apt of displayed(); track apt.id) {
+            <div class="rounded-xl border border-slate-200 bg-white overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+
+              <!-- Top status bar -->
+              <div [class]="'h-1 ' + meta(apt.status).bar"></div>
+
+              <div class="p-5">
+
+                <!-- Date + time  /  Status badge -->
+                <div class="flex items-start justify-between mb-4">
+                  <div>
+                    <p class="text-base font-bold text-slate-800">{{ formatDate(apt.startTime) }}</p>
+                    <p class="text-sm text-slate-500 mt-0.5">
+                      {{ formatTime(apt.startTime) }}&nbsp;–&nbsp;{{ formatTime(apt.endTime) }}
+                    </p>
+                  </div>
+                  <span [class]="'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold flex-shrink-0 ' + meta(apt.status).badge">
+                    <span [class]="'w-1.5 h-1.5 rounded-full ' + meta(apt.status).dot"></span>
+                    {{ meta(apt.status).label }}
+                  </span>
+                </div>
+
+                <!-- Doctor + specialization -->
+                <div class="flex items-center gap-3 mb-3">
+                  <div class="w-10 h-10 rounded-full bg-teal-100 flex items-center justify-center flex-shrink-0">
+                    <span class="text-sm font-bold text-teal-700">{{ initials(apt.doctorName) }}</span>
+                  </div>
+                  <div class="min-w-0">
+                    <p class="text-sm font-semibold text-slate-800 truncate">
+                      {{ apt.doctorName ?? 'Unknown Doctor' }}
+                    </p>
+                    @if (apt.specialization) {
+                      <p class="text-xs font-medium text-teal-600 mt-0.5">{{ apt.specialization }}</p>
+                    }
+                  </div>
+                </div>
+
+                <!-- Hospital -->
+                @if (apt.hospitalName) {
+                  <div class="flex items-center gap-1.5 text-xs text-slate-500 mb-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-2 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                    </svg>
+                    <span class="truncate">{{ apt.hospitalName }}</span>
+                  </div>
+                }
+
+                <!-- Proxy booking indicator -->
+                @if (apt.isProxyBooking) {
+                  <div class="flex items-center gap-1.5 text-xs text-slate-500 mb-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 flex-shrink-0 text-violet-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    </svg>
+                    <span>For&nbsp;<span class="font-semibold text-slate-700">{{ apt.patientName }}</span></span>
+                  </div>
+                }
+
+                <!-- Footer: booked date + cancel -->
+                <div class="flex items-center justify-between pt-3 border-t border-slate-100">
+                  <div class="flex items-center gap-1 text-xs text-slate-400">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    Booked&nbsp;{{ formatBooked(apt.createdAt) }}
+                  </div>
+                  @if (canCancel(apt)) {
+                    <button
+                      (click)="cancel(apt)"
+                      [disabled]="cancelling() === apt.id"
+                      class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold text-rose-600 bg-rose-50 hover:bg-rose-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+                      @if (cancelling() === apt.id) {
+                        <svg class="animate-spin w-3 h-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
+                        </svg>
+                        Cancelling…
+                      } @else {
+                        Cancel
+                      }
+                    </button>
+                  }
+                </div>
+
+              </div>
+            </div>
+          }
+        </div>
+      }
+
+    </div>
   `,
 })
 export class AppointmentListComponent implements OnInit {
-  private svc  = inject(AppointmentService);
-  private msg  = inject(MessageService);
-  private conf = inject(ConfirmationService);
+  private svc = inject(AppointmentService);
 
-  all      = signal<AppointmentDTO[]>([]);
-  loading  = signal(false);
-  upcoming = computed(() => this.all().filter(a => a.status === 'SCHEDULED'));
-  past     = computed(() => this.all().filter(a => a.status !== 'SCHEDULED'));
+  all        = signal<AppointmentDTO[]>([]);
+  loading    = signal(true);
+  cancelling = signal<number | null>(null);
 
-  ngOnInit() { this.load(); }
+  activeTab    = signal<TabId>('all');
+  activeStatus = signal<string>('');
 
-  load() {
-    this.loading.set(true);
+  private upcomingList = computed(() => this.all().filter(a => UPCOMING_SET.has(a.status ?? '')));
+  private pastList     = computed(() => this.all().filter(a => !UPCOMING_SET.has(a.status ?? '')));
+
+  tabs = [
+    { id: 'all'      as TabId, label: 'All',      count: computed(() => this.all().length) },
+    { id: 'upcoming' as TabId, label: 'Upcoming',  count: computed(() => this.upcomingList().length) },
+    { id: 'past'     as TabId, label: 'Past',      count: computed(() => this.pastList().length) },
+  ];
+
+  tabStatuses = computed(() => {
+    const base = this.activeTab() === 'upcoming' ? this.upcomingList()
+               : this.activeTab() === 'past'     ? this.pastList()
+               : this.all();
+    return [...new Set(base.map(a => a.status ?? '').filter(Boolean))];
+  });
+
+  displayed = computed(() => {
+    const base = this.activeTab() === 'upcoming' ? this.upcomingList()
+               : this.activeTab() === 'past'     ? this.pastList()
+               : this.all();
+    const s = this.activeStatus();
+    return s ? base.filter(a => a.status === s) : base;
+  });
+
+  ngOnInit() {
     this.svc.getAll().subscribe({
-      next:     d => this.all.set(d),
-      error:    () => this.loading.set(false),
-      complete: () => this.loading.set(false),
+      next:  d  => { this.all.set(d); this.loading.set(false); },
+      error: () => this.loading.set(false),
     });
   }
 
-  cancel(a: AppointmentDTO) {
-    this.conf.confirm({
-      message: 'Cancel this appointment?',
-      acceptButtonStyleClass: 'p-button-danger',
-      accept: () =>
-        this.svc.cancel(a.id!).subscribe({
-          next: () => {
-            this.msg.add({ severity: 'info', summary: 'Appointment cancelled' });
-            this.load();
-          },
-        }),
+  setTab(id: TabId) {
+    this.activeTab.set(id);
+    this.activeStatus.set('');
+  }
+
+  meta(status: string | undefined): StatusMeta {
+    return STATUSES[status ?? ''] ?? STATUSES['CANCELLED'];
+  }
+
+  initials(name: string | undefined): string {
+    if (!name) return '?';
+    return name.split(' ').slice(0, 2).map(w => w[0]).join('').toUpperCase();
+  }
+
+  formatDate(iso: string | undefined): string {
+    if (!iso) return '—';
+    return new Date(iso).toLocaleDateString('en-US', {
+      weekday: 'short', month: 'short', day: 'numeric', year: 'numeric',
     });
   }
 
-  statusLabel(s?: AppointmentStatus) { return STATUS_CONFIG[s ?? 'SCHEDULED']?.label ?? s; }
-  statusCls(s?: AppointmentStatus)   { return STATUS_CONFIG[s ?? 'SCHEDULED']?.cls   ?? ''; }
+  formatTime(iso: string | undefined): string {
+    if (!iso) return '—';
+    return new Date(iso).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+  }
+
+  formatBooked(iso: string | undefined): string {
+    if (!iso) return 'unknown date';
+    const diff = Date.now() - new Date(iso).getTime();
+    const days = Math.floor(diff / 86_400_000);
+    if (days === 0) return 'today';
+    if (days === 1) return 'yesterday';
+    if (days < 7)  return `${days} days ago`;
+    return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  }
+
+  canCancel(apt: AppointmentDTO): boolean {
+    return apt.status === 'PENDING' || apt.status === 'SCHEDULED';
+  }
+
+  cancel(apt: AppointmentDTO) {
+    if (!apt.id || this.cancelling() !== null) return;
+    if (!confirm(`Cancel your appointment with ${apt.doctorName ?? 'this doctor'}?`)) return;
+    this.cancelling.set(apt.id);
+    this.svc.cancel(apt.id).subscribe({
+      next: () => {
+        this.all.update(list =>
+          list.map(a => a.id === apt.id ? { ...a, status: 'CANCELLED' as AppointmentStatus } : a),
+        );
+        this.cancelling.set(null);
+      },
+      error: () => this.cancelling.set(null),
+    });
+  }
 }

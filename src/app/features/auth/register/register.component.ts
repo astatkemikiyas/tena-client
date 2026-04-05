@@ -45,6 +45,19 @@ import { AuthService } from '../../../core/services/auth.service';
             </div>
 
             <div class="flex flex-col gap-1.5">
+              <label class="text-sm font-medium text-slate-700">Username</label>
+              <input pInputText [(ngModel)]="form.username" name="username"
+                     placeholder="abebe_kebede" class="w-full" [disabled]="loading()" />
+              <p class="text-xs text-slate-400">Used to sign in. No spaces, min 3 characters.</p>
+            </div>
+
+            <div class="flex flex-col gap-1.5">
+              <label class="text-sm font-medium text-slate-700">Email</label>
+              <input pInputText [(ngModel)]="form.email" name="email" type="email"
+                     placeholder="abebe@example.com" class="w-full" [disabled]="loading()" />
+            </div>
+
+            <div class="flex flex-col gap-1.5">
               <label class="text-sm font-medium text-slate-700">Phone Number</label>
               <input pInputText [(ngModel)]="form.phoneNumber" name="phoneNumber"
                      placeholder="+251 9XX XXX XXX" class="w-full" [disabled]="loading()" />
@@ -88,9 +101,7 @@ import { AuthService } from '../../../core/services/auth.service';
 
         <p class="text-center text-sm text-slate-500 mt-6">
           Already have an account?
-          <a routerLink="/login" class="text-indigo-600 font-semibold hover:text-indigo-700 ml-1">
-            Sign in
-          </a>
+          <a routerLink="/login" class="text-indigo-600 font-semibold hover:text-indigo-700 ml-1">Sign in</a>
         </p>
 
         <p class="text-center mt-3">
@@ -107,16 +118,22 @@ export class RegisterComponent {
   private auth   = inject(AuthService);
   private router = inject(Router);
 
-  form = { firstName: '', lastName: '', phoneNumber: '', password: '' };
+  form = { firstName: '', lastName: '', username: '', email: '', phoneNumber: '', password: '' };
   confirmPassword = '';
   loading = signal(false);
   error   = signal('');
   success = signal(false);
 
   submit() {
-    const { firstName, lastName, phoneNumber, password } = this.form;
-    if (!firstName || !lastName || !phoneNumber || !password) {
+    const { firstName, lastName, username, email, phoneNumber, password } = this.form;
+    if (!firstName || !lastName || !username || !email || !phoneNumber || !password) {
       this.error.set('All fields are required.'); return;
+    }
+    if (username.length < 3 || /\s/.test(username)) {
+      this.error.set('Username must be at least 3 characters with no spaces.'); return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      this.error.set('Please enter a valid email address.'); return;
     }
     if (password !== this.confirmPassword) {
       this.error.set('Passwords do not match.'); return;

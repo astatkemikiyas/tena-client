@@ -1,5 +1,5 @@
 export type AppointmentStatus =
-  | 'SCHEDULED' | 'CANCELLED' | 'LATE_CANCEL'
+  | 'PENDING'   | 'SCHEDULED' | 'CANCELLED' | 'LATE_CANCEL'
   | 'ATTENDED'  | 'NO_SHOW'   | 'COMPLETED';
 
 export interface AvailabilitySlotDTO {
