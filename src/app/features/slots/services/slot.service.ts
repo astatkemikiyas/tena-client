@@ -1,13 +1,10 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { environment } from '../../../../environments/environment';
-import { AvailabilitySlotDTO } from '../../../shared/models';
+import { ClientService } from '../../../api';
 
 @Injectable({ providedIn: 'root' })
 export class SlotService {
-  private http = inject(HttpClient);
-  private base = `${environment.apiUrl}/api/client/slots`;
+  private api = inject(ClientService);
 
-  getAll()         { return this.http.get<AvailabilitySlotDTO[]>(this.base); }
-  getById(id: number) { return this.http.get<AvailabilitySlotDTO>(`${this.base}/${id}`); }
+  getAll()            { return this.api.getAvailableSlots(); }
+  getById(id: number) { return this.api.getSlotById(id); }
 }
