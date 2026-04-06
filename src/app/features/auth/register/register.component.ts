@@ -30,12 +30,13 @@ const FIELD = 'w-full border border-slate-200 rounded-xl px-4 py-3.5 text-sm tex
         </div>
 
         <!-- Form area -->
-        <div class="flex-1 flex items-center justify-center px-8 py-10">
+        <div class="flex-1 flex items-center justify-center px-8 py-8">
           <div class="w-full max-w-md">
 
-            <!-- Logo -->
-            <a routerLink="/" class="inline-block mb-7">
-              <img src="assets/images/logo.png" alt="TenaDigital" class="h-10 w-auto" />
+            <!-- Logo + wordmark -->
+            <a routerLink="/" class="inline-flex items-center gap-3 mb-7">
+              <img src="assets/images/logo.png" alt="TenaDigital" class="h-12 w-auto" />
+              <span class="font-extrabold text-slate-800 text-xl tracking-tight">TenaDigital</span>
             </a>
 
             <!-- Heading -->
@@ -109,17 +110,17 @@ const FIELD = 'w-full border border-slate-200 rounded-xl px-4 py-3.5 text-sm tex
 
               <!-- Terms checkbox -->
               <div class="pt-1">
-                <label class="flex items-start gap-3 cursor-pointer group">
-                  <div class="relative flex-shrink-0 mt-0.5">
-                    <input type="checkbox" [(ngModel)]="acceptedTerms" name="acceptedTerms"
-                           class="sr-only peer" [disabled]="loading()" />
-                    <div class="w-5 h-5 rounded border-2 border-slate-300 peer-checked:bg-primary-600 peer-checked:border-primary-600 transition-all flex items-center justify-center">
+                <label class="flex items-start gap-3 cursor-pointer">
+                  <div class="relative flex-shrink-0 mt-0.5" (click)="acceptedTerms = !acceptedTerms">
+                    <div [class]="acceptedTerms
+                      ? 'w-5 h-5 rounded border-2 bg-primary-600 border-primary-600 transition-all flex items-center justify-center'
+                      : 'w-5 h-5 rounded border-2 border-slate-300 transition-all flex items-center justify-center bg-white'">
                       @if (acceptedTerms) {
                         <i class="pi pi-check text-white text-[10px]"></i>
                       }
                     </div>
                   </div>
-                  <span class="text-sm text-slate-600 leading-snug">
+                  <span class="text-sm text-slate-600 leading-snug select-none" (click)="acceptedTerms = !acceptedTerms">
                     I accept the
                     <a href="#" class="font-semibold text-primary-600 hover:underline" (click)="$event.stopPropagation()">Terms of Service</a>
                     and
@@ -138,7 +139,7 @@ const FIELD = 'w-full border border-slate-200 rounded-xl px-4 py-3.5 text-sm tex
               @if (success()) {
                 <div class="flex items-start gap-2.5 p-3.5 rounded-xl bg-emerald-50 border border-emerald-200">
                   <i class="pi pi-check-circle text-emerald-500 text-sm mt-0.5 flex-shrink-0"></i>
-                  <p class="text-sm text-emerald-700 font-medium">Account created! Redirecting to login…</p>
+                  <p class="text-sm text-emerald-700 font-medium">Account created! Redirecting to login...</p>
                 </div>
               }
 
@@ -150,7 +151,7 @@ const FIELD = 'w-full border border-slate-200 rounded-xl px-4 py-3.5 text-sm tex
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
                   </svg>
-                  Creating account…
+                  Creating account...
                 } @else {
                   Register
                 }
@@ -162,96 +163,81 @@ const FIELD = 'w-full border border-slate-200 rounded-xl px-4 py-3.5 text-sm tex
 
         <!-- Bottom copyright -->
         <div class="px-8 py-6 text-xs text-slate-400">
-          © {{ year }} TenaDigital. All rights reserved.
+          &copy; {{ year }} TenaDigital. All rights reserved.
         </div>
       </div>
 
       <!-- ── Right: Visual panel ──────────────────────────────── -->
-      <div class="hidden lg:flex lg:w-[52%] xl:w-[55%] bg-slate-50 flex-col justify-between p-14 flex-shrink-0 relative overflow-hidden border-l border-slate-100">
+      <div class="hidden lg:flex lg:w-[52%] xl:w-[54%] bg-slate-50 flex-col p-14 flex-shrink-0 border-l border-slate-100">
 
-        <!-- Headline -->
-        <div>
-          <h2 class="text-5xl xl:text-6xl font-extrabold leading-[1.05] tracking-tight mb-5">
-            <span class="text-primary-600">Find a Doctor.</span><br/>
-            <span class="text-slate-800">Book in minutes.</span>
+        <!-- Headline block -->
+        <div class="mb-10">
+          <p class="text-xs font-black tracking-[0.2em] uppercase text-primary-500 mb-4">Healthcare platform</p>
+          <h2 class="text-5xl xl:text-[3.25rem] font-extrabold leading-[1.06] tracking-tight text-slate-900 mb-5">
+            Find a Doctor.<br/>
+            <span class="text-primary-600">Book in minutes.</span>
           </h2>
-          <p class="text-slate-500 text-base leading-relaxed max-w-md">
-            Search verified specialists across Ethiopia, pick a time that works, and confirm your appointment — all in one place.
+          <p class="text-slate-500 text-base leading-relaxed max-w-sm">
+            Search verified specialists across Ethiopia, pick a time that works, and confirm your appointment all in one place.
           </p>
         </div>
 
-        <!-- UI Mockup cards -->
-        <div class="relative flex-1 mt-10">
-
-          <!-- Card 1: Stats overview -->
-          <div class="bg-white rounded-2xl shadow-[0_4px_32px_-4px_rgba(0,0,0,0.10)] border border-slate-100 p-5 w-full max-w-sm">
-            <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4">Platform overview</p>
-            <div class="flex items-center justify-between mb-5">
-              <div>
-                <p class="text-3xl font-black text-slate-900">500+</p>
-                <p class="text-xs font-semibold text-slate-400 mt-0.5">Verified doctors</p>
+        <!-- Stats row -->
+        <div class="grid grid-cols-3 gap-4 mb-8">
+          @for (stat of stats; track stat.label) {
+            <div class="bg-white rounded-2xl border border-slate-100 px-5 py-4 shadow-sm">
+              <div class="w-8 h-8 rounded-lg bg-primary-50 flex items-center justify-center mb-3">
+                <i [class]="'pi text-primary-600 text-sm ' + stat.icon"></i>
               </div>
-              <div class="w-12 h-12 rounded-xl bg-primary-50 flex items-center justify-center">
-                <i class="pi pi-users text-primary-600 text-lg"></i>
-              </div>
+              <p class="text-2xl font-black text-slate-900 leading-none mb-1">{{ stat.value }}</p>
+              <p class="text-xs font-semibold text-slate-400">{{ stat.label }}</p>
             </div>
-            <!-- Mini bars -->
-            <div class="space-y-2.5">
-              @for (row of statsRows; track row.label) {
-                <div class="flex items-center gap-3">
-                  <span class="text-xs text-slate-500 w-24 flex-shrink-0">{{ row.label }}</span>
-                  <div class="flex-1 bg-slate-100 rounded-full h-2 overflow-hidden">
-                    <div class="h-full rounded-full bg-primary-500 transition-all"
-                         [style.width]="row.pct"></div>
-                  </div>
-                  <span class="text-xs font-bold text-slate-700 w-6 text-right flex-shrink-0">{{ row.val }}</span>
+          }
+        </div>
+
+        <!-- App preview card -->
+        <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden flex-1">
+
+          <!-- Card header -->
+          <div class="flex items-center justify-between px-5 py-4 border-b border-slate-100">
+            <div class="flex items-center gap-2">
+              <div class="w-2 h-2 rounded-full bg-primary-500"></div>
+              <p class="text-sm font-bold text-slate-800">Available Doctors</p>
+            </div>
+            <span class="text-xs font-semibold text-primary-600 bg-primary-50 border border-primary-100 px-2.5 py-1 rounded-full">
+              Live
+            </span>
+          </div>
+
+          <!-- Doctor rows -->
+          <div class="divide-y divide-slate-50">
+            @for (doc of previewDoctors; track doc.name) {
+              <div class="flex items-center gap-4 px-5 py-3.5 hover:bg-slate-50/60 transition-colors">
+                <!-- Avatar -->
+                <div class="w-9 h-9 rounded-xl bg-primary-50 flex items-center justify-center flex-shrink-0">
+                  <span class="text-xs font-extrabold text-primary-600">{{ doc.initials }}</span>
                 </div>
-              }
-            </div>
-          </div>
-
-          <!-- Card 2: Upcoming appointment — overlapping -->
-          <div class="bg-white rounded-2xl shadow-[0_4px_32px_-4px_rgba(0,0,0,0.12)] border border-slate-100 p-4 w-72 absolute -bottom-4 right-0 xl:right-6">
-            <div class="flex items-center justify-between mb-3">
-              <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Upcoming</p>
-              <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">
-                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                Confirmed
-              </span>
-            </div>
-            <div class="flex items-center gap-3 mb-3">
-              <div class="w-10 h-10 rounded-xl bg-primary-50 flex items-center justify-center flex-shrink-0">
-                <span class="text-sm font-extrabold text-primary-600">AK</span>
+                <!-- Info -->
+                <div class="flex-1 min-w-0">
+                  <p class="text-sm font-semibold text-slate-800 truncate">{{ doc.name }}</p>
+                  <p class="text-xs text-slate-400 font-medium truncate">{{ doc.spec }} · {{ doc.city }}</p>
+                </div>
+                <!-- Availability badge -->
+                <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full flex-shrink-0">
+                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                  Available
+                </span>
               </div>
-              <div>
-                <p class="text-sm font-bold text-slate-800">Dr. Amara Kifle</p>
-                <p class="text-xs text-primary-600 font-medium">Cardiologist</p>
-              </div>
-            </div>
-            <div class="flex items-center gap-2 text-xs text-slate-500 bg-slate-50 rounded-lg px-3 py-2">
-              <i class="pi pi-calendar text-slate-400"></i>
-              <span>Tomorrow, 10:30 – 11:00 AM</span>
-            </div>
+            }
           </div>
 
-          <!-- Card 3: Specialty chip row -->
-          <div class="bg-white rounded-2xl shadow-[0_4px_20px_-4px_rgba(0,0,0,0.08)] border border-slate-100 p-4 w-64 absolute top-4 right-0 xl:right-6">
-            <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Top specialties</p>
-            <div class="flex flex-wrap gap-1.5">
-              @for (s of specialtyChips; track s) {
-                <span class="px-2.5 py-1 rounded-full text-[11px] font-semibold bg-primary-50 text-primary-700 border border-primary-100">{{ s }}</span>
-              }
-            </div>
+          <!-- Card footer -->
+          <div class="px-5 py-3.5 border-t border-slate-100 bg-slate-50/50 flex items-center justify-between">
+            <p class="text-xs text-slate-400">Showing 3 of 500+ doctors</p>
+            <span class="text-xs font-semibold text-primary-600">View all</span>
           </div>
-
         </div>
 
-        <!-- Dots pagination (decorative) -->
-        <div class="flex items-center gap-2 mt-8">
-          <span class="w-2 h-2 rounded-full bg-primary-600"></span>
-          <span class="w-2 h-2 rounded-full bg-slate-300"></span>
-          <span class="w-2 h-2 rounded-full bg-slate-300"></span>
-        </div>
       </div>
 
     </div>
@@ -273,14 +259,17 @@ export class RegisterComponent {
   showPass        = signal(false);
   showConfPass    = signal(false);
 
-  statsRows = [
-    { label: 'Cardiology',   pct: '78%', val: '78' },
-    { label: 'Pediatrics',   pct: '55%', val: '55' },
-    { label: 'Dermatology',  pct: '40%', val: '40' },
-    { label: 'Orthopedics',  pct: '30%', val: '30' },
+  stats = [
+    { icon: 'pi-users',    value: '500+', label: 'Doctors'    },
+    { icon: 'pi-building', value: '120+', label: 'Hospitals'  },
+    { icon: 'pi-heart',    value: '40+',  label: 'Specialties'},
   ];
 
-  specialtyChips = ['Cardiology', 'Pediatrics', 'Dentistry', 'Orthopedics', 'Eye Care', 'General'];
+  previewDoctors = [
+    { initials: 'AK', name: 'Dr. Amara Kifle',    spec: 'Cardiologist',  city: 'Addis Ababa' },
+    { initials: 'YT', name: 'Dr. Yonas Tesfaye',  spec: 'Pediatrician',  city: 'Bahir Dar'   },
+    { initials: 'TB', name: 'Dr. Tigist Bekele',   spec: 'Dermatologist', city: 'Hawassa'     },
+  ];
 
   submit() {
     const { firstName, lastName, username, email, phoneNumber, password } = this.form;

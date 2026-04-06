@@ -30,7 +30,6 @@ const SPEC_ICONS: string[] = ['pi-heart', 'pi-users', 'pi-star', 'pi-bolt', 'pi-
 
           <!-- Badge -->
           <span class="inline-flex items-center gap-2 bg-white border border-primary-100 text-primary-600 text-xs font-bold px-3.5 py-1.5 rounded-full tracking-wider uppercase shadow-sm mb-8">
-            <span class="w-1.5 h-1.5 rounded-full bg-primary-500 animate-pulse"></span>
             Healthcare, simplified
           </span>
 
