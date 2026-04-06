@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, HostListener } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../core/services/auth.service';
@@ -45,13 +45,40 @@ import { AuthService } from '../../core/services/auth.service';
           <!-- Desktop auth -->
           <div class="hidden md:flex items-center gap-3">
             @if (auth.isAuthenticated()) {
-              <button (click)="auth.logout()"
-                class="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm text-slate-600 hover:bg-slate-100 transition-colors">
-                <div class="w-7 h-7 rounded-full bg-gradient-to-br from-indigo-400 to-indigo-600 flex items-center justify-center">
-                  <span class="text-xs font-bold text-white">P</span>
-                </div>
-                <span>Logout</span>
-              </button>
+              <!-- User dropdown -->
+              <div class="relative">
+                <button (click)="dropdownOpen.set(!dropdownOpen())"
+                  class="flex items-center gap-2.5 px-2 py-1.5 rounded-lg hover:bg-slate-100 transition-colors">
+                  <div class="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-400 to-indigo-600 flex items-center justify-center flex-shrink-0">
+                    <span class="text-xs font-bold text-white">{{ auth.getProfile()?.initials }}</span>
+                  </div>
+                  <span class="text-sm font-medium text-slate-700">{{ auth.getProfile()?.name }}</span>
+                  <i class="pi pi-chevron-down text-xs text-slate-400 transition-transform"
+                     [class.rotate-180]="dropdownOpen()"></i>
+                </button>
+
+                @if (dropdownOpen()) {
+                  <div class="absolute right-0 mt-1.5 w-52 bg-white rounded-xl shadow-lg border border-slate-200 py-1.5 overflow-hidden">
+                    <!-- User info header -->
+                    <div class="px-4 py-2.5 border-b border-slate-100">
+                      <p class="text-sm font-semibold text-slate-800 truncate">{{ auth.getProfile()?.name }}</p>
+                      <p class="text-xs text-slate-500 truncate mt-0.5">{{ auth.getProfile()?.email }}</p>
+                    </div>
+                    <a routerLink="/profile" (click)="dropdownOpen.set(false)"
+                       class="flex items-center gap-2.5 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 transition-colors">
+                      <i class="pi pi-user text-slate-400 text-sm w-4"></i>
+                      Profile
+                    </a>
+                    <div class="border-t border-slate-100 mt-1 pt-1">
+                      <button (click)="auth.logout(); dropdownOpen.set(false)"
+                        class="w-full flex items-center gap-2.5 px-4 py-2 text-sm text-rose-600 hover:bg-rose-50 transition-colors">
+                        <i class="pi pi-sign-out text-sm w-4"></i>
+                        Sign out
+                      </button>
+                    </div>
+                  </div>
+                }
+              </div>
             } @else {
               <a routerLink="/login"
                  class="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors px-3 py-2">
@@ -93,10 +120,24 @@ import { AuthService } from '../../core/services/auth.service';
                class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-600 hover:bg-slate-50 transition-colors">
               <i class="pi pi-calendar-check text-sm w-4"></i> My Appointments
             </a>
-            <div class="pt-2 border-t border-slate-100">
+            <div class="pt-2 border-t border-slate-100 space-y-1">
+              <!-- User info -->
+              <div class="flex items-center gap-3 px-3 py-2">
+                <div class="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-400 to-indigo-600 flex items-center justify-center flex-shrink-0">
+                  <span class="text-xs font-bold text-white">{{ auth.getProfile()?.initials }}</span>
+                </div>
+                <div class="min-w-0">
+                  <p class="text-sm font-medium text-slate-800 truncate">{{ auth.getProfile()?.name }}</p>
+                  <p class="text-xs text-slate-500 truncate">{{ auth.getProfile()?.email }}</p>
+                </div>
+              </div>
+              <a routerLink="/profile" (click)="mobileOpen.set(false)"
+                 class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-600 hover:bg-slate-50 transition-colors">
+                <i class="pi pi-user text-sm w-4"></i> Profile
+              </a>
               <button (click)="auth.logout(); mobileOpen.set(false)"
                 class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-rose-600 hover:bg-rose-50 transition-colors">
-                <i class="pi pi-sign-out text-sm w-4"></i> Logout
+                <i class="pi pi-sign-out text-sm w-4"></i> Sign out
               </button>
             </div>
           } @else {
@@ -117,6 +158,15 @@ import { AuthService } from '../../core/services/auth.service';
   `,
 })
 export class NavbarComponent {
-  auth       = inject(AuthService);
-  mobileOpen = signal(false);
+  auth         = inject(AuthService);
+  mobileOpen   = signal(false);
+  dropdownOpen = signal(false);
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.relative')) {
+      this.dropdownOpen.set(false);
+    }
+  }
 }

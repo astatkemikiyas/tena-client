@@ -307,7 +307,7 @@ export class SlotBrowserComponent implements OnInit {
   loading      = signal(true);
   filterSpec   = signal('General Medicine');
   selectedSlot = signal<AvailabilitySlotDTO | null>(null);
-  currentView  = signal<ViewType>('timeGridWeek');
+  currentView  = signal<ViewType>('dayGridMonth');
   viewStart    = signal<Date | null>(null);
   viewEnd      = signal<Date | null>(null);
   specs        = SPECS;
@@ -359,7 +359,7 @@ export class SlotBrowserComponent implements OnInit {
 
   calendarOptions = computed<CalendarOptions>(() => ({
     plugins:      [dayGridPlugin, timeGridPlugin, multiMonthPlugin, interactionPlugin],
-    initialView:  'timeGridWeek',
+    initialView:  'dayGridMonth',
     headerToolbar: {
       left:   'today prev,next',
       center: 'title',

@@ -43,6 +43,21 @@ export class AuthService {
     return this.oauthService.getAccessToken();
   }
 
+  getProfile(): { name: string; email: string; username: string; initials: string } | null {
+    const claims = this.oauthService.getIdentityClaims() as Record<string, string> | null;
+    if (!claims) return null;
+    const given  = claims['given_name']  ?? '';
+    const family = claims['family_name'] ?? '';
+    const name   = (given + ' ' + family).trim() || claims['preferred_username'] || 'User';
+    const initials = ((given[0] ?? '') + (family[0] ?? '')).toUpperCase() || name[0]?.toUpperCase() || 'U';
+    return {
+      name,
+      email:    claims['email']              ?? '',
+      username: claims['preferred_username'] ?? '',
+      initials,
+    };
+  }
+
   login(): void {
     this.oauthService.initCodeFlow();
   }
