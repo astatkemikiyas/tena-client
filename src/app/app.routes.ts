@@ -38,5 +38,6 @@ export const routes: Routes = [
     ],
   },
 
+  { path: 'callback', redirectTo: '/', pathMatch: 'full' },
   { path: '**', redirectTo: '' },
 ];
