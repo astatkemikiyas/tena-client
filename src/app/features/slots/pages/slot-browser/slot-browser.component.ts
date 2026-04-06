@@ -14,8 +14,8 @@ import { SlotService } from '../../services/slot.service';
 import { AuthService } from '../../../../core/services/auth.service';
 import { AvailabilitySlotDTO } from '../../../../shared/models';
 
-// ── Specialty palette (unified primary theme) ─────────────
-const DEFAULT_P = { bg: '#f5faec', text: '#3b5420', border: '#b5da87', dot: '#5e862e' };
+// ── Specialty palette (primary / indigo theme — matches app) ──
+const DEFAULT_P = { bg: '#EEF2FF', text: '#3730A3', border: '#C7D2FE', dot: '#4F46E5' };
 const PALETTE: Record<string, { bg: string; text: string; border: string; dot: string }> = {};
 
 const SPECS = [
@@ -102,31 +102,31 @@ type ViewType = 'timeGridWeek' | 'dayGridMonth' | 'multiMonthYear';
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Book an Appointment</h1>
-          <p class="text-slate-500 text-sm mt-0.5">
+          <p class="text-slate-400 text-sm mt-0.5 font-medium">
             {{ filtered().length }} slot{{ filtered().length !== 1 ? 's' : '' }} available
-            · <span class="font-medium" [style.color]="pal(filterSpec()).dot">{{ filterSpec() }}</span>
           </p>
         </div>
         @if (!auth.isAuthenticated()) {
-          <div class="flex items-center gap-2 px-3 py-2 rounded-xl bg-amber-50 border border-amber-200 text-sm flex-shrink-0">
-            <i class="pi pi-lock text-amber-400 text-xs"></i>
-            <span class="text-amber-800">
-              <a routerLink="/login" class="font-semibold hover:underline">Sign in</a> or
-              <a routerLink="/register" class="font-semibold hover:underline ml-0.5">register</a>
+          <div class="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-amber-50 border border-amber-200 text-sm flex-shrink-0">
+            <i class="pi pi-lock text-amber-500 text-xs"></i>
+            <span class="text-amber-800 font-medium">
+              <a routerLink="/login" class="font-bold hover:underline">Sign in</a> or
+              <a routerLink="/register" class="font-bold hover:underline ml-0.5">register</a>
               to book
             </span>
           </div>
         }
       </div>
 
-      <!-- ── Specialty filter chips (no "All") ──────────────────────────── -->
-      <div class="flex gap-2 overflow-x-auto no-scrollbar pb-0.5">
-        @for (spec of specs; track spec) {
-          <button (click)="selectSpec(spec)" [class]="chipClass(spec)">
-            <span class="w-2 h-2 rounded-full flex-shrink-0" [style.background]="pal(spec).dot"></span>
-            {{ spec }}
-          </button>
-        }
+      <!-- ── Specialty filter chips ──────────────────────────────────────── -->
+      <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-3">
+        <div class="flex gap-2 overflow-x-auto no-scrollbar">
+          @for (spec of specs; track spec) {
+            <button (click)="selectSpec(spec)" [class]="chipClass(spec)">
+              {{ spec }}
+            </button>
+          }
+        </div>
       </div>
 
       <!-- ── "Next available" banner (month / year views) ───────────────── -->
@@ -405,10 +405,10 @@ export class SlotBrowserComponent implements OnInit {
 
   chipClass(spec: string): string {
     const active = this.filterSpec() === spec;
-    return 'flex-shrink-0 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-sm font-medium transition-all border ' +
+    return 'flex-shrink-0 px-4 py-2 rounded-xl text-sm font-semibold transition-all whitespace-nowrap ' +
       (active
-        ? 'bg-primary-600 text-white border-primary-600 shadow-sm'
-        : 'bg-white text-slate-600 border-slate-200 hover:border-primary-300 hover:text-primary-600');
+        ? 'bg-primary-600 text-white shadow-sm shadow-primary-600/25'
+        : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50');
   }
 
   private toEvents(slots: AvailabilitySlotDTO[]): EventInput[] {

@@ -5,7 +5,7 @@ import { filter, map } from 'rxjs/operators';
 import { toSignal } from '@angular/core/rxjs-interop';
 
 const PAGE_TITLES: Record<string, { title: string; sub: string }> = {
-  '/':              { title: 'Home',              sub: 'Welcome to Tena Health'     },
+  '/':              { title: 'Home',              sub: 'Welcome to TenaDigital'     },
   '/doctors':       { title: 'Find a Doctor',     sub: 'Browse specialists near you' },
   '/slots':         { title: 'Available Slots',   sub: 'Book an appointment'         },
   '/appointments':  { title: 'My Appointments',   sub: 'View and manage your bookings' },

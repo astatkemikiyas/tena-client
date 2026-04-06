@@ -18,7 +18,7 @@ import { NavbarComponent } from '../navbar/navbar.component';
             <div class="w-6 h-6 rounded-lg bg-primary-700 flex items-center justify-center">
               <i class="pi pi-shield text-white text-xs"></i>
             </div>
-            <span class="text-sm font-semibold text-slate-700">Tena Health</span>
+            <span class="text-sm font-semibold text-slate-700">TenaDigital</span>
           </div>
           <p class="text-xs text-slate-400">&copy; {{ year }} Tena Digital. All rights reserved.</p>
           <div class="flex items-center gap-4 text-xs text-slate-400">
