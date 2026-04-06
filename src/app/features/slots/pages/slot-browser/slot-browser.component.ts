@@ -14,8 +14,8 @@ import { SlotService } from '../../services/slot.service';
 import { AuthService } from '../../../../core/services/auth.service';
 import { AvailabilitySlotDTO } from '../../../../shared/models';
 
-// ── Specialty palette (primary / indigo theme — matches app) ──
-const DEFAULT_P = { bg: '#EEF2FF', text: '#3730A3', border: '#C7D2FE', dot: '#4F46E5' };
+// ── Specialty palette (primary green theme — matches app) ──
+const DEFAULT_P = { bg: '#f0f7e6', text: '#3a5c1a', border: '#b8dB85', dot: '#5e862e' };
 const PALETTE: Record<string, { bg: string; text: string; border: string; dot: string }> = {};
 
 const SPECS = [
@@ -44,7 +44,7 @@ type ViewType = 'timeGridWeek' | 'dayGridMonth' | 'multiMonthYear';
         padding: 0.375rem 0.875rem !important; transition: all .15s !important; box-shadow: none !important;
       }
       .fc .fc-button-primary:hover:not(.fc-button-active) { background: #F8FAFC !important; color: #334155 !important; }
-      .fc .fc-button-primary.fc-button-active             { background: #4F46E5 !important; color: #fff !important; font-weight: 600 !important; }
+      .fc .fc-button-primary.fc-button-active             { background: #5e862e !important; color: #fff !important; font-weight: 600 !important; }
 
       .fc .fc-prev-button, .fc .fc-next-button, .fc .fc-today-button {
         background: #fff !important; border: 1px solid #E2E8F0 !important; color: #475569 !important;
@@ -62,10 +62,10 @@ type ViewType = 'timeGridWeek' | 'dayGridMonth' | 'multiMonthYear';
 
       .fc .fc-daygrid-day-number { font-size: .8125rem; font-weight: 600; color: #475569; text-decoration: none; padding: .5rem; }
       .fc .fc-day-today .fc-daygrid-day-number {
-        background: #4F46E5; color: #fff; border-radius: 50%;
+        background: #5e862e; color: #fff; border-radius: 50%;
         width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; margin: 4px;
       }
-      .fc .fc-day-today { background: #FAFAFF !important; }
+      .fc .fc-day-today { background: #f5faec !important; }
 
       .fc .fc-timegrid-now-indicator-line  { border-color: #EF4444; border-width: 2px; }
       .fc .fc-timegrid-now-indicator-arrow { border-top-color: #EF4444; }

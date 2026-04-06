@@ -13,11 +13,8 @@ import { AuthService } from '../../core/services/auth.service';
         <div class="flex items-center justify-between h-16">
 
           <!-- Logo -->
-          <a routerLink="/" class="flex items-center gap-2.5 flex-shrink-0">
-            <div class="w-9 h-9 rounded-xl bg-primary-700 flex items-center justify-center shadow-sm">
-              <i class="pi pi-shield text-white text-sm"></i>
-            </div>
-            <span class="font-bold text-slate-800 text-base tracking-tight">TenaDigital</span>
+          <a routerLink="/" class="flex items-center flex-shrink-0">
+            <img src="assets/images/logo.png" alt="TenaDigital" class="h-9 w-auto" />
           </a>
 
           <!-- Desktop nav -->
