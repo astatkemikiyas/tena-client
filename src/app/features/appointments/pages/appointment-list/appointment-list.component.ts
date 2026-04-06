@@ -46,7 +46,7 @@ const UPCOMING_SET = new Set(['PENDING', 'SCHEDULED']);
           <p class="text-sm text-slate-500 mt-0.5">Track and manage your healthcare visits</p>
         </div>
         <a routerLink="/slots"
-           class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-teal-600 text-white text-sm font-semibold hover:bg-teal-700 active:bg-teal-800 transition-colors shadow-sm">
+           class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary-600 text-white text-sm font-semibold hover:bg-primary-700 active:bg-primary-800 transition-colors shadow-sm">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
             <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"/>
           </svg>
@@ -64,7 +64,7 @@ const UPCOMING_SET = new Set(['PENDING', 'SCHEDULED']);
               : 'flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-slate-500 font-medium text-sm hover:text-slate-700 transition-all'">
             {{ tab.label }}
             <span [class]="activeTab() === tab.id
-              ? 'inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-xs font-bold bg-teal-100 text-teal-700'
+              ? 'inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-xs font-bold bg-primary-100 text-primary-700'
               : 'inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-xs font-semibold bg-slate-200 text-slate-500'">
               {{ tab.count() }}
             </span>
@@ -144,7 +144,7 @@ const UPCOMING_SET = new Set(['PENDING', 'SCHEDULED']);
               <p class="text-sm text-slate-400 mt-1">Book your first appointment with a specialist</p>
             </div>
             <a routerLink="/slots"
-               class="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-teal-600 text-white text-sm font-semibold hover:bg-teal-700 transition-colors">
+               class="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-primary-600 text-white text-sm font-semibold hover:bg-primary-700 transition-colors">
               Browse Available Slots
             </a>
           } @else {
@@ -187,15 +187,15 @@ const UPCOMING_SET = new Set(['PENDING', 'SCHEDULED']);
 
                 <!-- Doctor + specialization -->
                 <div class="flex items-center gap-3 mb-3">
-                  <div class="w-10 h-10 rounded-full bg-teal-100 flex items-center justify-center flex-shrink-0">
-                    <span class="text-sm font-bold text-teal-700">{{ initials(apt.doctorName) }}</span>
+                  <div class="w-10 h-10 rounded-full bg-primary-100 flex items-center justify-center flex-shrink-0">
+                    <span class="text-sm font-bold text-primary-700">{{ initials(apt.doctorName) }}</span>
                   </div>
                   <div class="min-w-0">
                     <p class="text-sm font-semibold text-slate-800 truncate">
                       {{ apt.doctorName ?? 'Unknown Doctor' }}
                     </p>
                     @if (apt.specialization) {
-                      <p class="text-xs font-medium text-teal-600 mt-0.5">{{ apt.specialization }}</p>
+                      <p class="text-xs font-medium text-primary-600 mt-0.5">{{ apt.specialization }}</p>
                     }
                   </div>
                 </div>
@@ -289,15 +289,15 @@ const UPCOMING_SET = new Set(['PENDING', 'SCHEDULED']);
             <!-- Appointment summary -->
             <div class="bg-slate-50 rounded-xl p-4 space-y-2.5 mb-5">
               <div class="flex items-center gap-2.5">
-                <div class="w-8 h-8 rounded-full bg-teal-100 flex items-center justify-center flex-shrink-0">
-                  <span class="text-xs font-bold text-teal-700">{{ initials(confirmTarget()!.doctorName) }}</span>
+                <div class="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center flex-shrink-0">
+                  <span class="text-xs font-bold text-primary-700">{{ initials(confirmTarget()!.doctorName) }}</span>
                 </div>
                 <div class="min-w-0">
                   <p class="text-sm font-semibold text-slate-800 truncate">
                     {{ confirmTarget()!.doctorName ?? 'Unknown Doctor' }}
                   </p>
                   @if (confirmTarget()!.specialization) {
-                    <p class="text-xs text-teal-600">{{ confirmTarget()!.specialization }}</p>
+                    <p class="text-xs text-primary-600">{{ confirmTarget()!.specialization }}</p>
                   }
                 </div>
               </div>

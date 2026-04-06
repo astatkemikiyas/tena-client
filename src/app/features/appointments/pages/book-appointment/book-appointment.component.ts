@@ -27,17 +27,17 @@ import { AvailabilitySlotDTO } from '../../../../shared/models';
 
       <!-- Slot summary -->
       @if (slot()) {
-        <div class="bg-gradient-to-r from-indigo-50 to-blue-50 rounded-2xl border border-indigo-100 p-5">
-          <p class="text-xs font-semibold text-indigo-500 uppercase tracking-wider mb-3">Selected Slot</p>
+        <div class="bg-primary-50 rounded-2xl border border-primary-100 p-5">
+          <p class="text-xs font-semibold text-primary-500 uppercase tracking-wider mb-3">Selected Slot</p>
           <div class="flex items-start gap-4">
-            <div class="w-12 h-12 rounded-xl bg-white border border-indigo-100 flex flex-col items-center justify-center flex-shrink-0 shadow-sm">
-              <span class="text-base font-bold text-indigo-700 leading-none">{{ slot()!.startTime | date:'d' }}</span>
-              <span class="text-xs text-indigo-400 uppercase leading-none mt-0.5">{{ slot()!.startTime | date:'MMM' }}</span>
+            <div class="w-12 h-12 rounded-xl bg-white border border-primary-100 flex flex-col items-center justify-center flex-shrink-0 shadow-sm">
+              <span class="text-base font-bold text-primary-700 leading-none">{{ slot()!.startTime | date:'d' }}</span>
+              <span class="text-xs text-primary-400 uppercase leading-none mt-0.5">{{ slot()!.startTime | date:'MMM' }}</span>
             </div>
             <div class="flex-1 min-w-0">
               <p class="text-sm font-semibold text-slate-800">Dr. {{ slot()!.doctorName || '—' }}</p>
               @if (slot()!.specialization) {
-                <p class="text-xs text-indigo-600 font-medium">{{ slot()!.specialization }}</p>
+                <p class="text-xs text-primary-600 font-medium">{{ slot()!.specialization }}</p>
               }
               <p class="text-xs text-slate-500 mt-1 flex items-center gap-1">
                 <i class="pi pi-clock text-xs"></i>
@@ -66,17 +66,17 @@ import { AvailabilitySlotDTO } from '../../../../shared/models';
           <button (click)="isProxy = false"
             [class]="toggleCardClass(false)">
             <div class="w-10 h-10 rounded-xl flex items-center justify-center mb-2"
-                 [class]="isProxy ? 'bg-slate-100' : 'bg-indigo-100'">
-              <i class="pi pi-user text-lg" [class]="isProxy ? 'text-slate-400' : 'text-indigo-600'"></i>
+                 [class]="isProxy ? 'bg-slate-100' : 'bg-primary-100'">
+              <i class="pi pi-user text-lg" [class]="isProxy ? 'text-slate-400' : 'text-primary-600'"></i>
             </div>
             <span class="text-sm font-semibold block" [class]="isProxy ? 'text-slate-500' : 'text-slate-800'">
               For Myself
             </span>
-            <span class="text-xs mt-0.5 block" [class]="isProxy ? 'text-slate-400' : 'text-indigo-500'">
+            <span class="text-xs mt-0.5 block" [class]="isProxy ? 'text-slate-400' : 'text-primary-500'">
               Using my account
             </span>
             @if (!isProxy) {
-              <div class="absolute top-3 right-3 w-5 h-5 rounded-full bg-indigo-600 flex items-center justify-center">
+              <div class="absolute top-3 right-3 w-5 h-5 rounded-full bg-primary-600 flex items-center justify-center">
                 <i class="pi pi-check text-white" style="font-size:9px"></i>
               </div>
             }
@@ -85,17 +85,17 @@ import { AvailabilitySlotDTO } from '../../../../shared/models';
           <button (click)="isProxy = true"
             [class]="toggleCardClass(true)">
             <div class="w-10 h-10 rounded-xl flex items-center justify-center mb-2"
-                 [class]="!isProxy ? 'bg-slate-100' : 'bg-indigo-100'">
-              <i class="pi pi-users text-lg" [class]="!isProxy ? 'text-slate-400' : 'text-indigo-600'"></i>
+                 [class]="!isProxy ? 'bg-slate-100' : 'bg-primary-100'">
+              <i class="pi pi-users text-lg" [class]="!isProxy ? 'text-slate-400' : 'text-primary-600'"></i>
             </div>
             <span class="text-sm font-semibold block" [class]="!isProxy ? 'text-slate-500' : 'text-slate-800'">
               For Someone Else
             </span>
-            <span class="text-xs mt-0.5 block" [class]="!isProxy ? 'text-slate-400' : 'text-indigo-500'">
+            <span class="text-xs mt-0.5 block" [class]="!isProxy ? 'text-slate-400' : 'text-primary-500'">
               Booking on their behalf
             </span>
             @if (isProxy) {
-              <div class="absolute top-3 right-3 w-5 h-5 rounded-full bg-indigo-600 flex items-center justify-center">
+              <div class="absolute top-3 right-3 w-5 h-5 rounded-full bg-primary-600 flex items-center justify-center">
                 <i class="pi pi-check text-white" style="font-size:9px"></i>
               </div>
             }
@@ -106,7 +106,7 @@ import { AvailabilitySlotDTO } from '../../../../shared/models';
         @if (isProxy) {
           <div class="space-y-4 pt-1 border-t border-slate-100">
             <p class="text-xs text-slate-500 pt-1 flex items-center gap-1.5">
-              <i class="pi pi-info-circle text-indigo-400"></i>
+              <i class="pi pi-info-circle text-primary-400"></i>
               Enter the patient's details below
             </p>
             <div class="flex flex-col gap-1.5">
@@ -181,7 +181,7 @@ export class BookAppointmentComponent implements OnInit {
     const active = this.isProxy === forProxy;
     return 'relative flex flex-col items-center text-center p-4 rounded-xl border-2 transition-all cursor-pointer ' +
       (active
-        ? 'border-indigo-500 bg-indigo-50 shadow-sm'
+        ? 'border-primary-500 bg-primary-50 shadow-sm'
         : 'border-slate-200 bg-white hover:border-slate-300');
   }
 

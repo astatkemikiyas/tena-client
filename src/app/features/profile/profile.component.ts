@@ -14,11 +14,11 @@ import { AppointmentService } from '../appointments/services/appointment.service
 
         <!-- Hero card -->
         <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
-          <div class="h-28 bg-gradient-to-r from-indigo-500 via-indigo-600 to-violet-600"></div>
+          <div class="h-28 bg-primary-700"></div>
           <div class="px-6 pb-6">
             <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 -mt-12">
               <div class="flex items-end gap-4">
-                <div class="w-24 h-24 rounded-2xl bg-gradient-to-br from-indigo-400 to-indigo-700 flex items-center justify-center shadow-xl border-4 border-white flex-shrink-0">
+                <div class="w-24 h-24 rounded-2xl bg-primary-600 flex items-center justify-center shadow-md border-4 border-white flex-shrink-0">
                   <span class="text-3xl font-bold text-white">{{ profile?.initials }}</span>
                 </div>
                 <div class="pb-1 min-w-0">
@@ -33,7 +33,7 @@ import { AppointmentService } from '../appointments/services/appointment.service
         <!-- Stats row -->
         <div class="grid grid-cols-3 gap-4">
           <div class="bg-white rounded-xl border border-slate-200 p-4 text-center shadow-sm">
-            <p class="text-2xl font-bold text-indigo-600">{{ totalAppointments() ?? '—' }}</p>
+            <p class="text-2xl font-bold text-primary-600">{{ totalAppointments() ?? '—' }}</p>
             <p class="text-xs text-slate-500 mt-1">Appointments</p>
           </div>
           <div class="bg-white rounded-xl border border-slate-200 p-4 text-center shadow-sm">
@@ -54,8 +54,8 @@ import { AppointmentService } from '../appointments/services/appointment.service
           <div class="divide-y divide-slate-100">
 
             <div class="flex items-center gap-4 px-6 py-4">
-              <div class="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center flex-shrink-0">
-                <i class="pi pi-user text-indigo-500"></i>
+              <div class="w-10 h-10 rounded-xl bg-primary-50 flex items-center justify-center flex-shrink-0">
+                <i class="pi pi-user text-primary-500"></i>
               </div>
               <div class="min-w-0 flex-1">
                 <p class="text-xs text-slate-400 mb-0.5">Full name</p>
@@ -64,8 +64,8 @@ import { AppointmentService } from '../appointments/services/appointment.service
             </div>
 
             <div class="flex items-center gap-4 px-6 py-4">
-              <div class="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center flex-shrink-0">
-                <i class="pi pi-at text-indigo-500"></i>
+              <div class="w-10 h-10 rounded-xl bg-primary-50 flex items-center justify-center flex-shrink-0">
+                <i class="pi pi-at text-primary-500"></i>
               </div>
               <div class="min-w-0 flex-1">
                 <p class="text-xs text-slate-400 mb-0.5">Username</p>
@@ -74,8 +74,8 @@ import { AppointmentService } from '../appointments/services/appointment.service
             </div>
 
             <div class="flex items-center gap-4 px-6 py-4">
-              <div class="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center flex-shrink-0">
-                <i class="pi pi-envelope text-indigo-500"></i>
+              <div class="w-10 h-10 rounded-xl bg-primary-50 flex items-center justify-center flex-shrink-0">
+                <i class="pi pi-envelope text-primary-500"></i>
               </div>
               <div class="min-w-0 flex-1">
                 <p class="text-xs text-slate-400 mb-0.5">Email address</p>
@@ -94,8 +94,8 @@ import { AppointmentService } from '../appointments/services/appointment.service
           <div class="divide-y divide-slate-100">
             <a routerLink="/appointments"
                class="flex items-center gap-4 px-6 py-4 hover:bg-slate-50 transition-colors group">
-              <div class="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center flex-shrink-0">
-                <i class="pi pi-calendar-check text-indigo-500"></i>
+              <div class="w-10 h-10 rounded-xl bg-primary-50 flex items-center justify-center flex-shrink-0">
+                <i class="pi pi-calendar-check text-primary-500"></i>
               </div>
               <div class="flex-1 min-w-0">
                 <p class="text-sm font-medium text-slate-800">My appointments</p>
@@ -105,8 +105,8 @@ import { AppointmentService } from '../appointments/services/appointment.service
             </a>
             <a routerLink="/slots"
                class="flex items-center gap-4 px-6 py-4 hover:bg-slate-50 transition-colors group">
-              <div class="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center flex-shrink-0">
-                <i class="pi pi-calendar-plus text-indigo-500"></i>
+              <div class="w-10 h-10 rounded-xl bg-primary-50 flex items-center justify-center flex-shrink-0">
+                <i class="pi pi-calendar-plus text-primary-500"></i>
               </div>
               <div class="flex-1 min-w-0">
                 <p class="text-sm font-medium text-slate-800">Browse available slots</p>

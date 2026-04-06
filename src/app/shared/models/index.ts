@@ -1,8 +1,12 @@
 // Re-export all generated models and services from the OpenAPI spec
 export * from '../../api';
 
-// Alias: client spec uses PublicDoctorDTO — keep DoctorProfileDTO for backward compat
-export type { PublicDoctorDTO as DoctorProfileDTO } from '../../api/model/publicDoctorDTO';
+import { PublicDoctorDTO } from '../../api/model/publicDoctorDTO';
+
+export interface DoctorProfileDTO extends PublicDoctorDTO {
+  region?: string;
+  city?: string;
+}
 
 // Additional type aliases
 export type AppointmentStatus =

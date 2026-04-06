@@ -14,18 +14,9 @@ import { SlotService } from '../../services/slot.service';
 import { AuthService } from '../../../../core/services/auth.service';
 import { AvailabilitySlotDTO } from '../../../../shared/models';
 
-// ── Specialty palette (pastel bg / dark text / border / dot) ─────────────
-const PALETTE: Record<string, { bg: string; text: string; border: string; dot: string }> = {
-  'General Medicine': { bg: '#EEF2FF', text: '#3730A3', border: '#C7D2FE', dot: '#6366F1' },
-  'Cardiology':       { bg: '#FEF2F2', text: '#991B1B', border: '#FECACA', dot: '#EF4444' },
-  'Dermatology':      { bg: '#FFFBEB', text: '#92400E', border: '#FDE68A', dot: '#F59E0B' },
-  'Pediatrics':       { bg: '#EFF6FF', text: '#1E40AF', border: '#BFDBFE', dot: '#3B82F6' },
-  'Orthopedics':      { bg: '#F0FDF4', text: '#14532D', border: '#BBF7D0', dot: '#22C55E' },
-  'Ophthalmology':    { bg: '#F5F3FF', text: '#5B21B6', border: '#DDD6FE', dot: '#8B5CF6' },
-  'Dentistry':        { bg: '#F0FDFA', text: '#134E4A', border: '#99F6E4', dot: '#14B8A6' },
-  'Psychiatry':       { bg: '#FDF2F8', text: '#9D174D', border: '#FBCFE8', dot: '#EC4899' },
-};
-const DEFAULT_P = { bg: '#F1F5F9', text: '#334155', border: '#CBD5E1', dot: '#64748B' };
+// ── Specialty palette (unified primary theme) ─────────────
+const DEFAULT_P = { bg: '#f5faec', text: '#3b5420', border: '#b5da87', dot: '#5e862e' };
+const PALETTE: Record<string, { bg: string; text: string; border: string; dot: string }> = {};
 
 const SPECS = [
   'General Medicine', 'Cardiology', 'Dermatology', 'Pediatrics',
@@ -151,7 +142,7 @@ type ViewType = 'timeGridWeek' | 'dayGridMonth' | 'multiMonthYear';
           </p>
           @if (nextSlot()) {
             <button (click)="jumpTo(nextSlot()!)"
-              class="flex-shrink-0 flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-indigo-600 text-white text-xs font-semibold hover:bg-indigo-700 transition-colors shadow-sm whitespace-nowrap">
+              class="flex-shrink-0 flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-primary-600 text-white text-xs font-semibold hover:bg-primary-700 transition-colors shadow-sm whitespace-nowrap">
               <i class="pi pi-arrow-right text-xs"></i>
               Go to {{ nextPeriodLabel() }}
             </button>
@@ -164,7 +155,7 @@ type ViewType = 'timeGridWeek' | 'dayGridMonth' | 'multiMonthYear';
 
         @if (loading()) {
           <div class="flex flex-col items-center justify-center py-32 gap-3">
-            <div class="w-10 h-10 border-4 border-indigo-100 border-t-indigo-500 rounded-full animate-spin"></div>
+            <div class="w-10 h-10 border-4 border-primary-100 border-t-primary-500 rounded-full animate-spin"></div>
             <p class="text-sm text-slate-400 font-medium">Loading availability…</p>
           </div>
         } @else {
@@ -185,7 +176,7 @@ type ViewType = 'timeGridWeek' | 'dayGridMonth' | 'multiMonthYear';
               </div>
               @if (nextSlot()) {
                 <button (click)="jumpTo(nextSlot()!)"
-                  class="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-700 transition-colors shadow-sm">
+                  class="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary-600 text-white text-sm font-semibold hover:bg-primary-700 transition-colors shadow-sm">
                   <i class="pi pi-arrow-right text-sm"></i> Go to {{ nextPeriodLabel() }}
                 </button>
               }
@@ -193,18 +184,6 @@ type ViewType = 'timeGridWeek' | 'dayGridMonth' | 'multiMonthYear';
           }
         }
       </div>
-
-      <!-- ── Legend ──────────────────────────────────────────────────────── -->
-      @if (!loading()) {
-        <div class="flex flex-wrap gap-x-5 gap-y-1.5 px-1">
-          @for (e of legendEntries(); track e.spec) {
-            <div class="flex items-center gap-1.5 text-xs text-slate-500">
-              <span class="w-2.5 h-2.5 rounded-full" [style.background]="e.dot"></span>
-              {{ e.spec }}
-            </div>
-          }
-        </div>
-      }
 
       <!-- ── Slot detail modal (z-[99999] — above FullCalendar's popover) ── -->
       @if (selectedSlot()) {
@@ -281,7 +260,7 @@ type ViewType = 'timeGridWeek' | 'dayGridMonth' | 'multiMonthYear';
                   </button>
                 } @else {
                   <button (click)="book(selectedSlot()!)"
-                    class="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 transition-colors shadow-sm">
+                    class="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-semibold text-white bg-primary-600 hover:bg-primary-700 transition-colors shadow-sm">
                     <i class="pi pi-sign-in"></i> Sign In to Book
                   </button>
                   <p class="text-center text-xs text-slate-400">You'll return here after signing in</p>
@@ -347,14 +326,6 @@ export class SlotBrowserComponent implements OnInit {
       case 'multiMonthYear': return 'next available year';
       default:               return 'next available week';
     }
-  });
-
-  legendEntries = computed(() => {
-    const seen = new Set<string>();
-    return this.slots()
-      .map(s => s.specialization ?? '')
-      .filter(s => s && !seen.has(s) && seen.add(s))
-      .map(spec => ({ spec, ...(PALETTE[spec] ?? DEFAULT_P) }));
   });
 
   calendarOptions = computed<CalendarOptions>(() => ({
@@ -436,8 +407,8 @@ export class SlotBrowserComponent implements OnInit {
     const active = this.filterSpec() === spec;
     return 'flex-shrink-0 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-sm font-medium transition-all border ' +
       (active
-        ? 'bg-indigo-600 text-white border-indigo-600 shadow-sm'
-        : 'bg-white text-slate-600 border-slate-200 hover:border-indigo-300 hover:text-indigo-600');
+        ? 'bg-primary-600 text-white border-primary-600 shadow-sm'
+        : 'bg-white text-slate-600 border-slate-200 hover:border-primary-300 hover:text-primary-600');
   }
 
   private toEvents(slots: AvailabilitySlotDTO[]): EventInput[] {

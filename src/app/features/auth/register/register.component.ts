@@ -12,14 +12,14 @@ import { AuthService } from '../../../core/services/auth.service';
   standalone: true,
   imports: [CommonModule, FormsModule, RouterLink, ButtonModule, InputTextModule, PasswordModule],
   template: `
-    <div class="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-slate-100 flex items-center justify-center p-4">
+    <div class="min-h-screen bg-slate-50 flex items-center justify-center p-4">
       <div class="w-full max-w-md">
 
         <!-- Logo -->
         <div class="text-center mb-8">
           <a routerLink="/" class="inline-flex flex-col items-center gap-3 mb-2">
-            <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500 to-indigo-700 flex items-center justify-center shadow-lg">
-              <i class="pi pi-heart text-white text-2xl"></i>
+            <div class="w-14 h-14 rounded-2xl bg-primary-700 flex items-center justify-center shadow-lg">
+              <i class="pi pi-shield text-white text-2xl"></i>
             </div>
             <span class="font-bold text-slate-800 text-xl tracking-tight">TenaDigital</span>
           </a>
@@ -101,7 +101,7 @@ import { AuthService } from '../../../core/services/auth.service';
 
         <p class="text-center text-sm text-slate-500 mt-6">
           Already have an account?
-          <a routerLink="/login" class="text-indigo-600 font-semibold hover:text-indigo-700 ml-1">Sign in</a>
+          <a routerLink="/login" class="text-primary-600 font-semibold hover:text-primary-700 ml-1">Sign in</a>
         </p>
 
         <p class="text-center mt-3">

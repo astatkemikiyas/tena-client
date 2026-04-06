@@ -15,8 +15,8 @@ import { NavbarComponent } from '../navbar/navbar.component';
       <footer class="border-t border-slate-200 bg-white mt-8">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 py-6 flex flex-col sm:flex-row items-center justify-between gap-2">
           <div class="flex items-center gap-2">
-            <div class="w-6 h-6 rounded-lg bg-gradient-to-br from-indigo-500 to-indigo-700 flex items-center justify-center">
-              <i class="pi pi-heart text-white text-xs"></i>
+            <div class="w-6 h-6 rounded-lg bg-primary-700 flex items-center justify-center">
+              <i class="pi pi-shield text-white text-xs"></i>
             </div>
             <span class="text-sm font-semibold text-slate-700">Tena Health</span>
           </div>

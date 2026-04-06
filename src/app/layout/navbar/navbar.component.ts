@@ -14,28 +14,28 @@ import { AuthService } from '../../core/services/auth.service';
 
           <!-- Logo -->
           <a routerLink="/" class="flex items-center gap-2.5 flex-shrink-0">
-            <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-700 flex items-center justify-center shadow-sm">
-              <i class="pi pi-heart text-white text-sm"></i>
+            <div class="w-9 h-9 rounded-xl bg-primary-700 flex items-center justify-center shadow-sm">
+              <i class="pi pi-shield text-white text-sm"></i>
             </div>
             <span class="font-bold text-slate-800 text-base tracking-tight">TenaDigital</span>
           </a>
 
           <!-- Desktop nav -->
           <nav class="hidden md:flex items-center gap-1">
-            <a routerLink="/" [routerLinkActiveOptions]="{exact:true}" routerLinkActive="text-indigo-600 font-medium bg-indigo-50"
+            <a routerLink="/" [routerLinkActiveOptions]="{exact:true}" routerLinkActive="text-primary-600 font-medium bg-primary-50"
                class="px-4 py-2 rounded-lg text-sm text-slate-600 hover:bg-slate-50 transition-colors">
               Home
             </a>
-            <a routerLink="/doctors" routerLinkActive="text-indigo-600 font-medium bg-indigo-50"
+            <a routerLink="/doctors" routerLinkActive="text-primary-600 font-medium bg-primary-50"
                class="px-4 py-2 rounded-lg text-sm text-slate-600 hover:bg-slate-50 transition-colors">
               Find Doctors
             </a>
-            <a routerLink="/slots" routerLinkActive="text-indigo-600 font-medium bg-indigo-50"
+            <a routerLink="/slots" routerLinkActive="text-primary-600 font-medium bg-primary-50"
                class="px-4 py-2 rounded-lg text-sm text-slate-600 hover:bg-slate-50 transition-colors">
               Browse Slots
             </a>
             @if (auth.isAuthenticated()) {
-              <a routerLink="/appointments" routerLinkActive="text-indigo-600 font-medium bg-indigo-50"
+              <a routerLink="/appointments" routerLinkActive="text-primary-600 font-medium bg-primary-50"
                  class="px-4 py-2 rounded-lg text-sm text-slate-600 hover:bg-slate-50 transition-colors">
                 My Appointments
               </a>
@@ -49,7 +49,7 @@ import { AuthService } from '../../core/services/auth.service';
               <div class="relative">
                 <button (click)="dropdownOpen.set(!dropdownOpen())"
                   class="flex items-center gap-2.5 px-2 py-1.5 rounded-lg hover:bg-slate-100 transition-colors">
-                  <div class="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-400 to-indigo-600 flex items-center justify-center flex-shrink-0">
+                  <div class="w-8 h-8 rounded-full bg-primary-600 flex items-center justify-center flex-shrink-0">
                     <span class="text-xs font-bold text-white">{{ auth.getProfile()?.initials }}</span>
                   </div>
                   <span class="text-sm font-medium text-slate-700">{{ auth.getProfile()?.name }}</span>
@@ -85,7 +85,7 @@ import { AuthService } from '../../core/services/auth.service';
                 Log in
               </a>
               <a routerLink="/register"
-                 class="px-4 py-2 rounded-lg bg-indigo-600 text-white text-sm font-medium hover:bg-indigo-700 transition-colors shadow-sm">
+                 class="px-4 py-2 rounded-lg bg-primary-600 text-white text-sm font-medium hover:bg-primary-700 transition-colors shadow-sm">
                 Get Started
               </a>
             }
@@ -102,28 +102,28 @@ import { AuthService } from '../../core/services/auth.service';
       <!-- Mobile menu -->
       @if (mobileOpen()) {
         <div class="md:hidden border-t border-slate-100 bg-white px-4 py-3 space-y-1">
-          <a routerLink="/" (click)="mobileOpen.set(false)" routerLinkActive="text-indigo-600 bg-indigo-50"
+          <a routerLink="/" (click)="mobileOpen.set(false)" routerLinkActive="text-primary-600 bg-primary-50"
              [routerLinkActiveOptions]="{exact:true}"
              class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-600 hover:bg-slate-50 transition-colors">
             <i class="pi pi-home text-sm w-4"></i> Home
           </a>
-          <a routerLink="/doctors" (click)="mobileOpen.set(false)" routerLinkActive="text-indigo-600 bg-indigo-50"
+          <a routerLink="/doctors" (click)="mobileOpen.set(false)" routerLinkActive="text-primary-600 bg-primary-50"
              class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-600 hover:bg-slate-50 transition-colors">
             <i class="pi pi-user-plus text-sm w-4"></i> Find Doctors
           </a>
-          <a routerLink="/slots" (click)="mobileOpen.set(false)" routerLinkActive="text-indigo-600 bg-indigo-50"
+          <a routerLink="/slots" (click)="mobileOpen.set(false)" routerLinkActive="text-primary-600 bg-primary-50"
              class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-600 hover:bg-slate-50 transition-colors">
             <i class="pi pi-calendar text-sm w-4"></i> Browse Slots
           </a>
           @if (auth.isAuthenticated()) {
-            <a routerLink="/appointments" (click)="mobileOpen.set(false)" routerLinkActive="text-indigo-600 bg-indigo-50"
+            <a routerLink="/appointments" (click)="mobileOpen.set(false)" routerLinkActive="text-primary-600 bg-primary-50"
                class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-600 hover:bg-slate-50 transition-colors">
               <i class="pi pi-calendar-check text-sm w-4"></i> My Appointments
             </a>
             <div class="pt-2 border-t border-slate-100 space-y-1">
               <!-- User info -->
               <div class="flex items-center gap-3 px-3 py-2">
-                <div class="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-400 to-indigo-600 flex items-center justify-center flex-shrink-0">
+                <div class="w-8 h-8 rounded-full bg-primary-600 flex items-center justify-center flex-shrink-0">
                   <span class="text-xs font-bold text-white">{{ auth.getProfile()?.initials }}</span>
                 </div>
                 <div class="min-w-0">
@@ -147,7 +147,7 @@ import { AuthService } from '../../core/services/auth.service';
                 Log in
               </a>
               <a routerLink="/register" (click)="mobileOpen.set(false)"
-                 class="flex items-center justify-center px-4 py-2.5 rounded-lg bg-indigo-600 text-white text-sm font-medium hover:bg-indigo-700 transition-colors">
+                 class="flex items-center justify-center px-4 py-2.5 rounded-lg bg-primary-600 text-white text-sm font-medium hover:bg-primary-700 transition-colors">
                 Get Started
               </a>
             </div>

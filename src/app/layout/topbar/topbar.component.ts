@@ -25,13 +25,13 @@ const PAGE_TITLES: Record<string, { title: string; sub: string }> = {
       <div class="flex items-center gap-1">
         <button class="w-9 h-9 flex items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100 transition-colors relative">
           <i class="pi pi-bell text-sm"></i>
-          <span class="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-indigo-500"></span>
+          <span class="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-primary-500"></span>
         </button>
         <button class="w-9 h-9 flex items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100 transition-colors">
           <i class="pi pi-cog text-sm"></i>
         </button>
         <div class="w-px h-5 bg-slate-200 mx-1"></div>
-        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-400 to-indigo-600 flex items-center justify-center cursor-pointer">
+        <div class="w-8 h-8 rounded-full bg-primary-600 flex items-center justify-center cursor-pointer">
           <span class="text-xs font-bold text-white">P</span>
         </div>
       </div>

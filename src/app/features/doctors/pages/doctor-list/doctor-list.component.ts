@@ -24,10 +24,14 @@ const SPECIALIZATIONS = [
           <h2 class="text-lg font-semibold text-slate-800">Find a Doctor</h2>
           <p class="text-sm text-slate-500">{{ filtered().length }} doctors available</p>
         </div>
-        <div class="w-full sm:w-56">
+        <div class="w-full sm:w-auto flex flex-col sm:flex-row gap-2">
           <p-select [(ngModel)]="selectedSpec" [options]="specs"
-                    placeholder="All specializations" styleClass="w-full"
-                    (onChange)="onSpecChange()" />
+                    placeholder="Specialty" styleClass="w-full sm:w-48" />
+          <p-select [(ngModel)]="selectedRegion" [options]="regions()"
+                    placeholder="Region" styleClass="w-full sm:w-36"
+                    (onChange)="onRegionChange()" />
+          <p-select [(ngModel)]="selectedCity" [options]="cities()"
+                    placeholder="City" styleClass="w-full sm:w-36" />
         </div>
       </div>
 
@@ -44,10 +48,10 @@ const SPECIALIZATIONS = [
       } @else {
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           @for (doc of filtered(); track doc.userId) {
-            <div class="bg-white rounded-2xl border border-slate-200 p-5 hover:shadow-md hover:border-indigo-200 transition-all flex flex-col gap-4">
+            <div class="bg-white rounded-2xl border border-slate-200 p-5 hover:shadow-md hover:border-primary-200 transition-all flex flex-col gap-4">
               <div class="flex items-start gap-4">
-                <div class="w-14 h-14 rounded-full bg-gradient-to-br from-indigo-100 to-indigo-200 flex items-center justify-center flex-shrink-0">
-                  <span class="text-xl font-bold text-indigo-700">
+                <div class="w-14 h-14 rounded-full bg-primary-100 flex items-center justify-center flex-shrink-0">
+                  <span class="text-xl font-bold text-primary-700">
                     {{ initials(doc.name) }}
                   </span>
                 </div>
@@ -55,13 +59,15 @@ const SPECIALIZATIONS = [
                   <h3 class="font-semibold text-slate-800 text-sm leading-snug">
                     {{ doc.name || 'Dr. ' + doc.medicalLicenseNumber }}
                   </h3>
-                  <p class="text-xs text-indigo-600 font-medium mt-0.5">
+                  <p class="text-xs text-primary-600 font-medium mt-0.5">
                     {{ doc.specialization || 'General Medicine' }}
                   </p>
-                  @if (doc.hospitalName) {
-                    <p class="text-xs text-slate-400 mt-1 flex items-center gap-1">
+                  @if (doc.hospitalName || doc.city) {
+                    <p class="text-xs text-slate-400 mt-1 flex items-center gap-1 truncate">
                       <i class="pi pi-building text-xs"></i>
                       {{ doc.hospitalName }}
+                      @if(doc.hospitalName && doc.city){ · }
+                      {{ doc.city }}
                     </p>
                   }
                 </div>
@@ -98,14 +104,22 @@ export class DoctorListComponent implements OnInit {
   doctors      = signal<DoctorProfileDTO[]>([]);
   loading      = signal(false);
   selectedSpec = signal<string>('All');
+  selectedRegion = signal<string>('All');
+  selectedCity = signal<string>('All');
   specs        = SPECIALIZATIONS;
 
+  regions = computed(() => ['All', ...new Set(this.doctors().map(d => d.region).filter(Boolean) as string[])]);
+  cities = computed(() => ['All', ...new Set(this.doctors()
+     .filter(d => this.selectedRegion() === 'All' || d.region === this.selectedRegion())
+     .map(d => d.city).filter(Boolean) as string[])]);
+
   filtered = computed(() =>
-    this.selectedSpec() === 'All'
-      ? this.doctors()
-      : this.doctors().filter(d =>
-          (d.specialization ?? 'General Medicine') === this.selectedSpec()
-        )
+    this.doctors().filter(d => {
+      const specMatch = this.selectedSpec() === 'All' || (d.specialization ?? 'General Medicine') === this.selectedSpec();
+      const regionMatch = this.selectedRegion() === 'All' || d.region === this.selectedRegion();
+      const cityMatch = this.selectedCity() === 'All' || d.city === this.selectedCity();
+      return specMatch && regionMatch && cityMatch;
+    })
   );
 
   ngOnInit() {
@@ -123,7 +137,9 @@ export class DoctorListComponent implements OnInit {
     });
   }
 
-  onSpecChange() {}
+  onRegionChange() {
+    this.selectedCity.set('All');
+  }
 
   bookSlot(doc: DoctorProfileDTO) {
     this.router.navigate(['/slots'], {
