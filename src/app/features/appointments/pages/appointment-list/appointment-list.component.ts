@@ -163,6 +163,7 @@ const UPCOMING_SET = new Set(['PENDING', 'SCHEDULED']);
       } @else {
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           @for (apt of displayed(); track apt.id) {
+
             <div class="rounded-xl border border-slate-200 bg-white overflow-hidden shadow-sm hover:shadow-md transition-shadow">
 
               <!-- Top status bar -->
@@ -255,14 +256,103 @@ const UPCOMING_SET = new Set(['PENDING', 'SCHEDULED']);
       }
 
     </div>
+
+    <!-- Cancel confirmation modal -->
+    @if (confirmTarget()) {
+      <div class="fixed inset-0 z-50 flex items-center justify-center p-4"
+           (click)="dismissConfirm()">
+        <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"></div>
+
+        <div class="relative w-full max-w-sm bg-white rounded-2xl shadow-2xl overflow-hidden"
+             (click)="$event.stopPropagation()">
+
+          <!-- Top accent -->
+          <div class="h-1 bg-rose-500"></div>
+
+          <div class="p-6">
+            <!-- Icon + title -->
+            <div class="flex items-start gap-4 mb-4">
+              <div class="w-11 h-11 rounded-xl bg-rose-50 flex items-center justify-center flex-shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-rose-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+              </div>
+              <div>
+                <h2 class="text-base font-bold text-slate-800">Cancel appointment</h2>
+                <p class="text-sm text-slate-500 mt-0.5">
+                  This action cannot be undone.
+                </p>
+              </div>
+            </div>
+
+            <!-- Appointment summary -->
+            <div class="bg-slate-50 rounded-xl p-4 space-y-2.5 mb-5">
+              <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-full bg-teal-100 flex items-center justify-center flex-shrink-0">
+                  <span class="text-xs font-bold text-teal-700">{{ initials(confirmTarget()!.doctorName) }}</span>
+                </div>
+                <div class="min-w-0">
+                  <p class="text-sm font-semibold text-slate-800 truncate">
+                    {{ confirmTarget()!.doctorName ?? 'Unknown Doctor' }}
+                  </p>
+                  @if (confirmTarget()!.specialization) {
+                    <p class="text-xs text-teal-600">{{ confirmTarget()!.specialization }}</p>
+                  }
+                </div>
+              </div>
+              @if (confirmTarget()!.startTime) {
+                <div class="flex items-center gap-2 text-xs text-slate-600">
+                  <i class="pi pi-calendar text-slate-400 text-xs w-4"></i>
+                  <span>{{ formatDate(confirmTarget()!.startTime) }}</span>
+                </div>
+                <div class="flex items-center gap-2 text-xs text-slate-600">
+                  <i class="pi pi-clock text-slate-400 text-xs w-4"></i>
+                  <span>{{ formatTime(confirmTarget()!.startTime) }} – {{ formatTime(confirmTarget()!.endTime) }}</span>
+                </div>
+              }
+              @if (confirmTarget()!.hospitalName) {
+                <div class="flex items-center gap-2 text-xs text-slate-600">
+                  <i class="pi pi-building text-slate-400 text-xs w-4"></i>
+                  <span class="truncate">{{ confirmTarget()!.hospitalName }}</span>
+                </div>
+              }
+            </div>
+
+            <!-- Actions -->
+            <div class="flex gap-3">
+              <button (click)="dismissConfirm()"
+                class="flex-1 px-4 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors">
+                Keep it
+              </button>
+              <button (click)="executeCancel()"
+                [disabled]="cancelling() !== null"
+                class="flex-1 px-4 py-2.5 rounded-xl bg-rose-600 text-white text-sm font-semibold hover:bg-rose-700 disabled:opacity-60 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2">
+                @if (cancelling() !== null) {
+                  <svg class="animate-spin w-3.5 h-3.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
+                  </svg>
+                  Cancelling…
+                } @else {
+                  Yes, cancel
+                }
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+
   `,
 })
 export class AppointmentListComponent implements OnInit {
   private svc = inject(AppointmentService);
 
-  all        = signal<AppointmentDTO[]>([]);
-  loading    = signal(true);
-  cancelling = signal<number | null>(null);
+  all           = signal<AppointmentDTO[]>([]);
+  loading       = signal(true);
+  cancelling    = signal<number | null>(null);
+  confirmTarget = signal<AppointmentDTO | null>(null);
 
   activeTab    = signal<TabId>('all');
   activeStatus = signal<string>('');
@@ -340,7 +430,17 @@ export class AppointmentListComponent implements OnInit {
 
   cancel(apt: AppointmentDTO) {
     if (!apt.id || this.cancelling() !== null) return;
-    if (!confirm(`Cancel your appointment with ${apt.doctorName ?? 'this doctor'}?`)) return;
+    this.confirmTarget.set(apt);
+  }
+
+  dismissConfirm() {
+    if (this.cancelling() !== null) return;
+    this.confirmTarget.set(null);
+  }
+
+  executeCancel() {
+    const apt = this.confirmTarget();
+    if (!apt?.id || this.cancelling() !== null) return;
     this.cancelling.set(apt.id);
     this.svc.cancel(apt.id).subscribe({
       next: () => {
@@ -348,6 +448,7 @@ export class AppointmentListComponent implements OnInit {
           list.map(a => a.id === apt.id ? { ...a, status: 'CANCELLED' as AppointmentStatus } : a),
         );
         this.cancelling.set(null);
+        this.confirmTarget.set(null);
       },
       error: () => this.cancelling.set(null),
     });
