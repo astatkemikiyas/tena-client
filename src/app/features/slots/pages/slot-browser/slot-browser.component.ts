@@ -322,7 +322,7 @@ export class SlotBrowserComponent implements OnInit {
     const [vs, ve] = [this.viewStart(), this.viewEnd()];
     if (!vs || !ve) return true;
     return this.filtered().some(s => {
-      const d = new Date(s.startTime);
+      const d = new Date(s.startTime!);
       return d >= vs && d < ve;
     });
   });
@@ -331,7 +331,7 @@ export class SlotBrowserComponent implements OnInit {
   nextSlot = computed(() => {
     const ve = this.viewEnd();
     if (!ve) return null;
-    return this.filtered().find(s => new Date(s.startTime) >= ve) ?? null;
+    return this.filtered().find(s => new Date(s.startTime!) >= ve) ?? null;
   });
 
   /** Show the top nav banner only in month / year views when view has no slots */
@@ -408,7 +408,7 @@ export class SlotBrowserComponent implements OnInit {
   /** Navigate calendar to the next available slot, staying in the same view type */
   jumpTo(slot: AvailabilitySlotDTO) {
     const api = this.calendarRef.getApi();
-    api.gotoDate(new Date(slot.startTime));
+    api.gotoDate(new Date(slot.startTime!));
   }
 
   onEventClick(arg: EventClickArg) {

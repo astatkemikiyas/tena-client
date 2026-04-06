@@ -11,9 +11,12 @@
 
 export interface PublicDoctorDTO { 
     userId?: string;
+    name?: string;
     medicalLicenseNumber?: string;
     specialization?: string;
     bio?: string;
     govApprovalStatus?: string;
+    hospitalName?: string;
+    yearsOfExperience?: number;
 }
 

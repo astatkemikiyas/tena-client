@@ -17,6 +17,11 @@ export interface AppointmentDTO {
     patientName?: string;
     patientPhone?: string;
     status?: AppointmentDTO.StatusEnum;
+    startTime?: string;
+    endTime?: string;
+    doctorName?: string;
+    specialization?: string;
+    hospitalName?: string;
     checkedInAt?: string;
     cancelledAt?: string;
     createdAt?: string;
