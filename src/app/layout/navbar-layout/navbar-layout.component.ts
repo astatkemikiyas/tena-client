@@ -14,8 +14,8 @@ import { NavbarComponent } from '../navbar/navbar.component';
       </main>
       <footer class="border-t border-slate-200 bg-white mt-8">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 py-6 flex flex-col sm:flex-row items-center justify-between gap-2">
-          <div class="flex items-center">
-            <img src="assets/images/logo.png" alt="TenaDigital" class="h-7 w-auto" />
+          <div class="flex items-center gap-2">
+<img src="assets/images/logo.png" alt="TenaDigital" class="h-8 w-full object-cover" />            <span class="text-sm font-bold text-slate-700 leading-none">TenaDigital</span>
           </div>
           <p class="text-xs text-slate-400">&copy; {{ year }} Tena Digital. All rights reserved.</p>
           <div class="flex items-center gap-4 text-xs text-slate-400">

@@ -35,8 +35,8 @@ const FIELD = 'w-full border border-slate-200 rounded-xl px-4 py-3.5 text-sm tex
 
             <!-- Logo + wordmark -->
             <a routerLink="/" class="inline-flex items-center gap-3 mb-7">
-              <img src="assets/images/logo.png" alt="TenaDigital" class="h-12 w-auto" />
-              <span class="font-extrabold text-slate-800 text-xl tracking-tight">TenaDigital</span>
+              <img src="assets/images/logo.png" alt="TenaDigital" class="h-16 w-auto" />
+              <span class="font-extrabold text-slate-900 text-2xl tracking-tight leading-none">TenaDigital</span>
             </a>
 
             <!-- Heading -->

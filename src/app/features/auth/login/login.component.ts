@@ -17,8 +17,9 @@ import { AuthService } from '../../../core/services/auth.service';
 
         <!-- Logo -->
         <div class="text-center mb-8">
-          <a routerLink="/" class="inline-flex flex-col items-center gap-3 mb-2">
-            <img src="assets/images/logo.png" alt="TenaDigital" class="h-12 w-auto" />
+          <a routerLink="/" class="inline-flex items-center gap-3 mb-2">
+            <img src="assets/images/logo.png" alt="TenaDigital" class="h-14 w-auto" />
+            <span class="font-extrabold text-slate-900 text-2xl tracking-tight leading-none">TenaDigital</span>
           </a>
           <h1 class="text-2xl font-bold text-slate-800 mt-2">Welcome back</h1>
           <p class="text-slate-500 text-sm mt-1">Sign in to your account to continue</p>
