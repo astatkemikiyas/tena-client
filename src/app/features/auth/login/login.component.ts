@@ -28,35 +28,10 @@ import { AuthService } from '../../../core/services/auth.service';
         </div>
 
         <!-- Card -->
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
-          <form class="space-y-5" (ngSubmit)="submit()">
-
-            <div class="flex flex-col gap-1.5">
-              <label class="text-sm font-medium text-slate-700">Email or Username</label>
-              <input pInputText [(ngModel)]="username" name="username"
-                     placeholder="Enter your email or username" class="w-full"
-                     [disabled]="loading()" />
-            </div>
-
-            <div class="flex flex-col gap-1.5">
-              <label class="text-sm font-medium text-slate-700">Password</label>
-              <p-password [(ngModel)]="password" name="password"
-                          placeholder="Enter your password"
-                          styleClass="w-full" inputStyleClass="w-full"
-                          [feedback]="false" [toggleMask]="true"
-                          [disabled]="loading()" />
-            </div>
-
-            @if (error()) {
-              <div class="flex items-start gap-2.5 p-3.5 rounded-xl bg-rose-50 border border-rose-200">
-                <i class="pi pi-exclamation-circle text-rose-500 text-sm mt-0.5 flex-shrink-0"></i>
-                <p class="text-sm text-rose-700">{{ error() }}</p>
-              </div>
-            }
-
-            <p-button label="Sign In" styleClass="w-full" type="submit"
-                      icon="pi pi-sign-in" [loading]="loading()" />
-          </form>
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 text-center">
+          <p class="text-slate-600 mb-6">You will be redirected to the secure identity provider to sign in or create an account.</p>
+          <p-button label="Sign In with Provider" styleClass="w-full"
+                    icon="pi pi-lock" (onClick)="submit()" />
         </div>
 
         <p class="text-center text-sm text-slate-500 mt-6">
@@ -81,29 +56,7 @@ export class LoginComponent {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
 
-  username = '';
-  password = '';
-  loading  = signal(false);
-  error    = signal('');
-
   submit() {
-    if (!this.username || !this.password) {
-      this.error.set('Please enter your email or username and password.');
-      return;
-    }
-    this.loading.set(true);
-    this.error.set('');
-    this.auth.loginWithEmailOrUsername(this.username.trim(), this.password).subscribe({
-      next: () => {
-        const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') ?? '/';
-        this.router.navigateByUrl(returnUrl);
-      },
-      error: (err) => {
-        const msg = err?.error?.error_description ?? err?.error?.message;
-        this.error.set(msg || 'Invalid email/username or password. Please try again.');
-        this.loading.set(false);
-      },
-      complete: () => this.loading.set(false),
-    });
+    this.auth.login();
   }
 }

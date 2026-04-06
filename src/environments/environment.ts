@@ -1,9 +1,9 @@
 export const environment = {
   production: false,
   apiUrl: 'http://localhost:8083',
-  keycloakUrl: 'http://localhost:8080',
-  keycloakRealm: 'master',
-  // Must match a Keycloak client with "Direct access grants" enabled
-  keycloakClientId: 'tena-client',
+  oidcIssuer: 'http://localhost:8080/realms/tena-dev',
+  oidcClientId: 'tena-client',
+  oidcRedirectUri: 'http://localhost:4200/callback',
+  oidcScope: 'openid profile email',
   appName: 'TenaDigital',
 };
