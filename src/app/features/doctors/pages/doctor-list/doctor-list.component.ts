@@ -287,8 +287,10 @@ export class DoctorListComponent implements OnInit {
   ngOnInit() {
     const spec   = this.route.snapshot.queryParamMap.get('spec');
     const region = this.route.snapshot.queryParamMap.get('region');
+    const city   = this.route.snapshot.queryParamMap.get('city');
     if (spec)   this.selectedSpec.set(spec);
     if (region) this.selectedRegion.set(region);
+    if (city)   this.selectedCity.set(city);
 
     this.load();
   }
