@@ -158,8 +158,7 @@ const UPCOMING_SET = new Set(['PENDING', 'SCHEDULED']);
 
         <!-- Empty state -->
         } @else if (displayed().length === 0) {
-          <div class="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
-            <div class="h-2 bg-gradient-to-r from-primary-400 to-primary-600"></div>
+          <div>
             <div class="flex flex-col items-center py-20 px-6 gap-5 text-center">
               <div class="w-20 h-20 rounded-2xl bg-primary-50 border border-primary-100 flex items-center justify-center">
                 <i class="pi pi-calendar text-3xl text-primary-400"></i>
