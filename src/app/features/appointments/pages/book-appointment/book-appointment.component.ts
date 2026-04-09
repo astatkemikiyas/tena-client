@@ -35,7 +35,7 @@ import { AvailabilitySlotDTO } from '../../../../shared/models';
               <span class="text-xs text-primary-400 uppercase leading-none mt-0.5">{{ slot()!.startTime | date:'MMM' }}</span>
             </div>
             <div class="flex-1 min-w-0">
-              <p class="text-sm font-semibold text-slate-800">Dr. {{ slot()!.doctorName || '—' }}</p>
+              <p class="text-sm font-semibold text-slate-800">{{ slot()!.doctorName || '—' }}</p>
               @if (slot()!.specialization) {
                 <p class="text-xs text-primary-600 font-medium">{{ slot()!.specialization }}</p>
               }
