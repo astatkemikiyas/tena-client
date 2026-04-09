@@ -254,7 +254,7 @@ type ViewType = 'timeGridWeek' | 'dayGridMonth' | 'multiMonthYear';
                   {{ initials(selectedSlot()!.doctorName) }}
                 </div>
                 <div>
-                  <p class="text-sm font-semibold text-slate-800">Dr. {{ selectedSlot()!.doctorName || '—' }}</p>
+                  <p class="text-sm font-semibold text-slate-800">{{ selectedSlot()!.doctorName || '—' }}</p>
                   <p class="text-xs font-medium mt-0.5" [style.color]="selPal().dot">
                     {{ selectedSlot()!.specialization || 'General' }}
                   </p>
@@ -489,7 +489,7 @@ export class SlotBrowserComponent implements OnInit {
     return {
       html: `<div class="tena-event" style="color:${p.text}">
                <div class="tena-event__time">${start}${end ? ' – ' + end : ''}</div>
-               <div class="tena-event__doctor">Dr. ${slot.doctorName ?? '—'}</div>
+               <div class="tena-event__doctor">${slot.doctorName ?? '—'}</div>
                ${slot.specialization ? `<div class="tena-event__spec">${slot.specialization}</div>` : ''}
              </div>`,
     };
