@@ -118,10 +118,33 @@ type ViewType = 'timeGridWeek' | 'dayGridMonth' | 'multiMonthYear';
         }
       </div>
 
+      <!-- ── Doctor context banner ───────────────────────────────────────── -->
+      @if (doctorInfo()) {
+        <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-5 flex items-center gap-4">
+          <div class="w-14 h-14 rounded-2xl bg-primary-50 flex items-center justify-center flex-shrink-0">
+            <span class="text-lg font-extrabold text-primary-600">{{ initials(doctorInfo()!.name) }}</span>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-[10px] font-black tracking-[0.18em] uppercase text-primary-500 mb-0.5">Viewing slots for</p>
+            <h2 class="text-base font-extrabold text-slate-900 truncate">{{ doctorInfo()!.name }}</h2>
+            <p class="text-xs font-semibold text-primary-600 mt-0.5">{{ doctorInfo()!.spec }}</p>
+            @if (doctorInfo()!.hospital) {
+              <p class="text-xs text-slate-400 mt-1 flex items-center gap-1 truncate">
+                <i class="pi pi-building text-[10px]"></i> {{ doctorInfo()!.hospital }}
+              </p>
+            }
+          </div>
+          <a routerLink="/doctors"
+             class="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-semibold text-slate-500 hover:text-slate-700 hover:border-slate-300 transition-colors">
+            <i class="pi pi-arrow-left text-[10px]"></i> All doctors
+          </a>
+        </div>
+      }
+
       <!-- ── Specialty filter chips ──────────────────────────────────────── -->
       <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-3">
         <div class="flex gap-2 overflow-x-auto no-scrollbar">
-          @for (spec of specs; track spec) {
+          @for (spec of availableSpecs(); track spec) {
             <button (click)="selectSpec(spec)" [class]="chipClass(spec)">
               {{ spec }}
             </button>
@@ -289,7 +312,29 @@ export class SlotBrowserComponent implements OnInit {
   currentView  = signal<ViewType>('dayGridMonth');
   viewStart    = signal<Date | null>(null);
   viewEnd      = signal<Date | null>(null);
-  specs        = SPECS;
+  doctorId     = signal<string | null>(null);
+
+  // When in doctor context: only show specs this doctor has slots for.
+  // Otherwise fall back to the predefined SPECS list.
+  availableSpecs = computed<string[]>(() => {
+    const id = this.doctorId();
+    if (!id) return SPECS;
+    const fromSlots = [...new Set(this.slots().map(s => s.specialization).filter(Boolean) as string[])].sort();
+    return fromSlots.length > 0 ? fromSlots : SPECS;
+  });
+
+  // Doctor summary card shown above the calendar when viewing a specific doctor
+  doctorInfo = computed(() => {
+    const id = this.doctorId();
+    if (!id) return null;
+    const first = this.slots()[0];
+    if (!first) return null;
+    return {
+      name:     first.doctorName ?? '',
+      spec:     first.specialization ?? 'General Medicine',
+      hospital: first.hospitalName ?? '',
+    };
+  });
 
   filtered = computed(() => {
     const spec = this.filterSpec();
@@ -360,20 +405,19 @@ export class SlotBrowserComponent implements OnInit {
   }));
 
   ngOnInit() {
-    const doctorId = this.route.snapshot.queryParamMap.get('doctorId');
-    const spec     = this.route.snapshot.queryParamMap.get('spec');
+    const doctorIdParam = this.route.snapshot.queryParamMap.get('doctorId');
+    const specParam     = this.route.snapshot.queryParamMap.get('spec');
 
-    if (spec) {
-      this.filterSpec.set(spec);
-    }
+    if (doctorIdParam) this.doctorId.set(doctorIdParam);
+    if (specParam)     this.filterSpec.set(specParam);
 
     this.svc.getAll().subscribe({
       next: d => {
-        if (doctorId) {
-          const doctorSlots = d.filter(s => s.doctorId === doctorId);
+        if (doctorIdParam) {
+          const doctorSlots = d.filter(s => s.doctorId === doctorIdParam);
           this.slots.set(doctorSlots);
-          // Auto-select the doctor's specialization if not already set via spec param
-          if (!spec && doctorSlots.length > 0 && doctorSlots[0].specialization) {
+          // Auto-select the doctor's first available specialization
+          if (!specParam && doctorSlots.length > 0 && doctorSlots[0].specialization) {
             this.filterSpec.set(doctorSlots[0].specialization);
           }
         } else {
@@ -456,7 +500,8 @@ export class SlotBrowserComponent implements OnInit {
   }
 
   initials(name?: string): string {
-    if (!name) return 'Dr';
-    return name.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase();
+    if (!name) return '?';
+    const parts = name.split(' ').filter(p => !p.match(/^Dr\.?$/i));
+    return parts.slice(0, 2).map(p => p[0]).join('').toUpperCase() || '?';
   }
 }
