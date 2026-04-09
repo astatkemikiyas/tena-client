@@ -47,10 +47,10 @@ const SPEC_ICONS: string[] = ['pi-heart', 'pi-users', 'pi-star', 'pi-bolt', 'pi-
           <!-- ── Search card ──────────────────────────────────────────── -->
           <div class="w-full bg-white rounded-3xl shadow-[0_8px_40px_-8px_rgba(0,0,0,0.10)] border border-slate-100 p-5">
 
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div class="flex flex-col sm:flex-row gap-3">
 
               <!-- Specialty -->
-              <div class="relative">
+              <div class="flex-1 relative">
                 <label class="absolute -top-[9px] left-4 bg-white px-1 text-[10px] font-bold text-primary-500 uppercase tracking-widest z-10">Specialty</label>
                 <div class="relative">
                   <i class="pi pi-heart absolute left-4 top-1/2 -translate-y-1/2 text-primary-400 text-sm pointer-events-none"></i>
@@ -66,11 +66,11 @@ const SPEC_ICONS: string[] = ['pi-heart', 'pi-users', 'pi-star', 'pi-bolt', 'pi-
               </div>
 
               <!-- Region -->
-              <div class="relative">
+              <div class="flex-1 relative">
                 <label class="absolute -top-[9px] left-4 bg-white px-1 text-[10px] font-bold text-primary-500 uppercase tracking-widest z-10">Region</label>
                 <div class="relative">
                   <i class="pi pi-map-marker absolute left-4 top-1/2 -translate-y-1/2 text-primary-400 text-sm pointer-events-none"></i>
-                  <select [ngModel]="searchRegion()" (ngModelChange)="searchRegion.set($event); searchCity.set('')"
+                  <select [ngModel]="searchRegion()" (ngModelChange)="searchRegion.set($event)"
                           class="w-full appearance-none bg-white border border-slate-200 hover:border-primary-300 focus:border-primary-500 focus:ring-2 focus:ring-primary-100 rounded-xl pl-10 pr-9 py-3.5 text-sm font-semibold text-slate-700 outline-none transition-all cursor-pointer">
                     <option value="">All regions</option>
                     @for (r of regions(); track r) {
@@ -81,30 +81,12 @@ const SPEC_ICONS: string[] = ['pi-heart', 'pi-users', 'pi-star', 'pi-bolt', 'pi-
                 </div>
               </div>
 
-              <!-- Woreda / City -->
-              <div class="relative">
-                <label class="absolute -top-[9px] left-4 bg-white px-1 text-[10px] font-bold text-primary-500 uppercase tracking-widest z-10">Woreda / City</label>
-                <div class="relative">
-                  <i class="pi pi-building absolute left-4 top-1/2 -translate-y-1/2 text-primary-400 text-sm pointer-events-none"></i>
-                  <select [ngModel]="searchCity()" (ngModelChange)="searchCity.set($event)"
-                          class="w-full appearance-none bg-white border border-slate-200 hover:border-primary-300 focus:border-primary-500 focus:ring-2 focus:ring-primary-100 rounded-xl pl-10 pr-9 py-3.5 text-sm font-semibold text-slate-700 outline-none transition-all cursor-pointer">
-                    <option value="">All woredas</option>
-                    @for (c of cities(); track c) {
-                      <option [value]="c">{{ c }}</option>
-                    }
-                  </select>
-                  <i class="pi pi-angle-down absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
-                </div>
-              </div>
-
-            </div>
-
-            <!-- Search button row -->
-            <div class="mt-3">
+              <!-- Search button -->
               <button (click)="onSearch()"
-                      class="w-full sm:w-auto sm:px-10 h-[50px] rounded-xl bg-primary-600 hover:bg-primary-700 active:scale-[0.97] text-white font-bold text-sm shadow-lg shadow-primary-600/30 transition-all flex items-center justify-center gap-2 whitespace-nowrap">
+                      class="sm:self-end h-[50px] px-8 rounded-xl bg-primary-600 hover:bg-primary-700 active:scale-[0.97] text-white font-bold text-sm shadow-lg shadow-primary-600/30 transition-all flex items-center justify-center gap-2 whitespace-nowrap">
                 <i class="pi pi-search"></i> Search
               </button>
+
             </div>
 
             <!-- Quick pills -->
@@ -258,7 +240,6 @@ export class HomeComponent implements OnInit {
 
   searchSpec   = signal('');
   searchRegion = signal('');
-  searchCity   = signal('');
 
   doctors = signal<DoctorProfileDTO[]>([]);
   stats   = signal<Stats | null>(null);
@@ -266,11 +247,6 @@ export class HomeComponent implements OnInit {
   // Derived only from doctors with active availability — no phantom regions
   specs   = computed(() => [...new Set(this.doctors().map(d => d.specialization).filter(Boolean) as string[])].sort());
   regions = computed(() => [...new Set(this.doctors().flatMap(d => (d.hospitals ?? []).map(h => h.region).filter(Boolean) as string[]))].sort());
-  cities  = computed(() => {
-    const r    = this.searchRegion();
-    const base = r ? this.doctors().filter(d => (d.hospitals ?? []).some(h => h.region === r)) : this.doctors();
-    return [...new Set(base.flatMap(d => (d.hospitals ?? []).map(h => h.city).filter(Boolean) as string[]))].sort();
-  });
 
   icon(i: number): string {
     return SPEC_ICONS[i % SPEC_ICONS.length];
@@ -287,7 +263,6 @@ export class HomeComponent implements OnInit {
     const queryParams: Record<string, string> = {};
     if (this.searchSpec())   queryParams['spec']   = this.searchSpec();
     if (this.searchRegion()) queryParams['region'] = this.searchRegion();
-    if (this.searchCity())   queryParams['city']   = this.searchCity();
     this.router.navigate(['/doctors'], { queryParams });
   }
 }
