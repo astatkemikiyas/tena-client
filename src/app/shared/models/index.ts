@@ -3,10 +3,7 @@ export * from '../../api';
 
 import { PublicDoctorDTO } from '../../api/model/publicDoctorDTO';
 
-export interface DoctorProfileDTO extends PublicDoctorDTO {
-  region?: string;
-  city?: string;
-}
+export type DoctorProfileDTO = PublicDoctorDTO;
 
 // Additional type aliases
 export type AppointmentStatus =

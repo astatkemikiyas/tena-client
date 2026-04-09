@@ -361,9 +361,24 @@ export class SlotBrowserComponent implements OnInit {
 
   ngOnInit() {
     const doctorId = this.route.snapshot.queryParamMap.get('doctorId');
+    const spec     = this.route.snapshot.queryParamMap.get('spec');
+
+    if (spec) {
+      this.filterSpec.set(spec);
+    }
+
     this.svc.getAll().subscribe({
       next: d => {
-        this.slots.set(doctorId ? d.filter(s => s.doctorId === doctorId) : d);
+        if (doctorId) {
+          const doctorSlots = d.filter(s => s.doctorId === doctorId);
+          this.slots.set(doctorSlots);
+          // Auto-select the doctor's specialization if not already set via spec param
+          if (!spec && doctorSlots.length > 0 && doctorSlots[0].specialization) {
+            this.filterSpec.set(doctorSlots[0].specialization);
+          }
+        } else {
+          this.slots.set(d);
+        }
         this.loading.set(false);
         this.cdr.markForCheck();
       },

@@ -2,10 +2,8 @@ import { Component, inject, signal, OnInit, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute, RouterLink } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
 import { DoctorService } from '../../services/doctor.service';
 import { DoctorProfileDTO } from '../../../../shared/models';
-import { environment } from '../../../../../environments/environment';
 
 @Component({
   selector: 'app-doctor-list',
@@ -69,23 +67,21 @@ import { environment } from '../../../../../environments/environment';
               </div>
             </div>
 
-            <!-- City -->
-            @if (cities().length > 0) {
-              <div class="flex-1 relative">
-                <label class="absolute -top-[9px] left-4 bg-white px-1 text-[10px] font-bold text-primary-500 uppercase tracking-widest z-10">City</label>
-                <div class="relative">
-                  <i class="pi pi-building absolute left-3.5 top-1/2 -translate-y-1/2 text-primary-400 text-sm pointer-events-none"></i>
-                  <select [ngModel]="selectedCity()" (ngModelChange)="selectedCity.set($event)"
-                          class="w-full appearance-none bg-white border border-slate-200 hover:border-primary-300 focus:border-primary-500 focus:ring-2 focus:ring-primary-100 rounded-xl pl-10 pr-9 py-3 text-sm font-semibold text-slate-700 outline-none transition-all cursor-pointer">
-                    <option value="">All cities</option>
-                    @for (c of cities(); track c) {
-                      <option [value]="c">{{ c }}</option>
-                    }
-                  </select>
-                  <i class="pi pi-angle-down absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
-                </div>
+            <!-- City / Woreda -->
+            <div class="flex-1 relative">
+              <label class="absolute -top-[9px] left-4 bg-white px-1 text-[10px] font-bold text-primary-500 uppercase tracking-widest z-10">Woreda / City</label>
+              <div class="relative">
+                <i class="pi pi-building absolute left-3.5 top-1/2 -translate-y-1/2 text-primary-400 text-sm pointer-events-none"></i>
+                <select [ngModel]="selectedCity()" (ngModelChange)="selectedCity.set($event)"
+                        class="w-full appearance-none bg-white border border-slate-200 hover:border-primary-300 focus:border-primary-500 focus:ring-2 focus:ring-primary-100 rounded-xl pl-10 pr-9 py-3 text-sm font-semibold text-slate-700 outline-none transition-all cursor-pointer">
+                  <option value="">All woredas</option>
+                  @for (c of cities(); track c) {
+                    <option [value]="c">{{ c }}</option>
+                  }
+                </select>
+                <i class="pi pi-angle-down absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
               </div>
-            }
+            </div>
 
             <!-- Clear filters -->
             @if (selectedSpec() || selectedRegion() || selectedCity()) {
@@ -151,9 +147,7 @@ import { environment } from '../../../../../environments/environment';
 
         <!-- ── Empty state ─────────────────────────────────────── -->
         } @else if (filtered().length === 0) {
-          <div class="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
-            <!-- Gradient top band -->
-            <div class="h-2 bg-gradient-to-r from-primary-400 to-primary-600"></div>
+          <div>
             <div class="flex flex-col items-center py-20 px-6 gap-5 text-center">
               <div class="w-20 h-20 rounded-2xl bg-primary-50 border border-primary-100 flex items-center justify-center">
                 <i class="pi pi-search text-3xl text-primary-400"></i>
@@ -204,18 +198,31 @@ import { environment } from '../../../../../environments/environment';
                     <p class="text-xs font-semibold text-primary-600 mt-0.5">
                       {{ doc.specialization || 'General Medicine' }}
                     </p>
-                    @if (doc.hospitalName) {
-                      <p class="text-xs text-slate-400 mt-1 flex items-center gap-1 truncate">
-                        <i class="pi pi-building text-[10px]"></i>
-                        {{ doc.hospitalName }}{{ doc.city ? ' · ' + doc.city : '' }}
-                      </p>
-                    }
                   </div>
                 </div>
 
                 <!-- Bio -->
                 @if (doc.bio) {
                   <p class="text-xs text-slate-500 leading-relaxed line-clamp-2 flex-1">{{ doc.bio }}</p>
+                }
+
+                <!-- Hospitals list -->
+                @if (doc.hospitals && doc.hospitals.length > 0) {
+                  <div class="space-y-1.5">
+                    @for (h of doc.hospitals; track h.name) {
+                      <div class="flex items-start gap-2 px-3 py-2 rounded-xl bg-slate-50">
+                        <i class="pi pi-building text-slate-400 flex-shrink-0 text-[11px] mt-[3px]"></i>
+                        <div class="min-w-0">
+                          <p class="text-xs font-medium text-slate-700 truncate">{{ h.name }}</p>
+                          @if (h.region || h.city) {
+                            <p class="text-[11px] text-slate-400 truncate">
+                              {{ h.region }}{{ h.region && h.city ? ' · ' : '' }}{{ h.city }}
+                            </p>
+                          }
+                        </div>
+                      </div>
+                    }
+                  </div>
                 }
 
                 <!-- Footer -->
@@ -251,28 +258,28 @@ export class DoctorListComponent implements OnInit {
   private svc    = inject(DoctorService);
   private router = inject(Router);
   private route  = inject(ActivatedRoute);
-  private http   = inject(HttpClient);
 
   doctors = signal<DoctorProfileDTO[]>([]);
   loading = signal(false);
-  regions = signal<string[]>([]);
 
   selectedSpec   = signal('');
   selectedRegion = signal('');
   selectedCity   = signal('');
 
-  specs  = computed(() => [...new Set(this.doctors().map(d => d.specialization).filter(Boolean) as string[])].sort());
-  cities = computed(() => {
+  // All three options derived from actual doctors data — no phantom regions/cities
+  specs   = computed(() => [...new Set(this.doctors().map(d => d.specialization).filter(Boolean) as string[])].sort());
+  regions = computed(() => [...new Set(this.doctors().flatMap(d => (d.hospitals ?? []).map(h => h.region).filter(Boolean) as string[]))].sort());
+  cities  = computed(() => {
     const r = this.selectedRegion();
-    const base = r ? this.doctors().filter(d => d.region === r) : this.doctors();
-    return [...new Set(base.map(d => d.city).filter(Boolean) as string[])].sort();
+    const base = r ? this.doctors().filter(d => (d.hospitals ?? []).some(h => h.region === r)) : this.doctors();
+    return [...new Set(base.flatMap(d => (d.hospitals ?? []).map(h => h.city).filter(Boolean) as string[]))].sort();
   });
 
   filtered = computed(() =>
     this.doctors().filter(d => {
       const specMatch   = !this.selectedSpec()   || (d.specialization ?? 'General Medicine') === this.selectedSpec();
-      const regionMatch = !this.selectedRegion() || d.region === this.selectedRegion();
-      const cityMatch   = !this.selectedCity()   || d.city   === this.selectedCity();
+      const regionMatch = !this.selectedRegion() || (d.hospitals ?? []).some(h => h.region === this.selectedRegion());
+      const cityMatch   = !this.selectedCity()   || (d.hospitals ?? []).some(h => h.city   === this.selectedCity());
       return specMatch && regionMatch && cityMatch;
     })
   );
@@ -282,10 +289,6 @@ export class DoctorListComponent implements OnInit {
     const region = this.route.snapshot.queryParamMap.get('region');
     if (spec)   this.selectedSpec.set(spec);
     if (region) this.selectedRegion.set(region);
-
-    // Load all regions from API (same as home page)
-    this.http.get<string[]>(`${environment.apiUrl}/api/public/regions`)
-      .subscribe({ next: v => this.regions.set(v), error: () => {} });
 
     this.load();
   }
@@ -306,11 +309,14 @@ export class DoctorListComponent implements OnInit {
   }
 
   bookSlot(doc: DoctorProfileDTO) {
-    this.router.navigate(['/slots'], { queryParams: { doctorId: doc.userId } });
+    this.router.navigate(['/slots'], {
+      queryParams: { doctorId: doc.userId, spec: doc.specialization || 'General Medicine' },
+    });
   }
 
   initials(name?: string): string {
-    if (!name) return 'Dr';
-    return name.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase();
+    if (!name) return '?';
+    const parts = name.split(' ').filter(p => !p.match(/^Dr\.?$/i));
+    return parts.slice(0, 2).map(p => p[0]).join('').toUpperCase() || '?';
   }
 }

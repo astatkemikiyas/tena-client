@@ -55,6 +55,10 @@ export class LoginComponent {
   private router = inject(Router);
 
   submit() {
+    const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
+    if (returnUrl) {
+      sessionStorage.setItem('auth_return_url', returnUrl);
+    }
     this.auth.login();
   }
 }

@@ -1,0 +1,7 @@
+MVP
+---
+- if trying to book you must login, once you do you must be redirected to the right day and slot
+- the doctors card should include their name and hospital name and adress
+- once i want to book from the doctor it should select his available category so i can see right away when that doctor is free
+- if doctor has no avaialbility don't show them
+

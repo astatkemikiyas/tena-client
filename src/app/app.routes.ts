@@ -46,6 +46,6 @@ export const routes: Routes = [
     ],
   },
 
-  { path: 'callback', redirectTo: '/', pathMatch: 'full' },
+  { path: 'callback', loadComponent: () => import('./features/auth/callback/callback.component').then(m => m.CallbackComponent) },
   { path: '**', redirectTo: '' },
 ];
