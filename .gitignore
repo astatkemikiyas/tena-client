@@ -40,3 +40,6 @@ testem.log
 # System files
 .DS_Store
 Thumbs.db
+
+# Generated API client (regenerated from specs/ on every npm start)
+/src/app/api
