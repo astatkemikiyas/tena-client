@@ -1,4 +1,4 @@
-export * from './appointmentDTO';
+not export * from './appointmentDTO';
 export * from './availabilitySlotDTO';
 export * from './hospitalInfoDTO';
 export * from './publicDoctorDTO';

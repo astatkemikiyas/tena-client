@@ -10,6 +10,7 @@ git_push.sh
 index.ts
 model/appointmentDTO.ts
 model/availabilitySlotDTO.ts
+model/hospitalInfoDTO.ts
 model/models.ts
 model/publicDoctorDTO.ts
 param.ts
